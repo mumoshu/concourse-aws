@@ -111,3 +111,7 @@ variable "tsa_port" {
   description = ""
   default = "2222"
 }
+
+variable "worker_instance_profile" {
+  description = "IAM instance profile name to be used by Concourse workers. Can be an empty string to not specify it (no instance profile is used then)"
+}

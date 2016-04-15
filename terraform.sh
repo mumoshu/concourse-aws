@@ -29,5 +29,5 @@ terraform "$@" -var aws_region=ap-northeast-1 -var availability_zones=ap-northea
   -var tsa_public_key=host_key.pub \
   -var tsa_worker_private_key=worker_key \
   -var ami=$(./my-latest-ami.sh) \
-  -var in_access_allowed_cidr=$CONCOURSE_IN_ACCESS_ALLOWED_CIDR
-  
+  -var in_access_allowed_cidr=$CONCOURSE_IN_ACCESS_ALLOWED_CIDR \
+  -var worker_instance_profile=$CONCOURSE_WORKER_INSTANCE_PROFILE

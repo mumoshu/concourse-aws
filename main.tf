@@ -104,6 +104,7 @@ resource "aws_launch_configuration" "worker-lc" {
   user_data = "${template_cloudinit_config.worker.rendered}"
   key_name = "${var.key_name}"
   associate_public_ip_address = true
+  iam_instance_profile = "${var.worker_instance_profile}"
   lifecycle {
     create_before_destroy = true
   }
