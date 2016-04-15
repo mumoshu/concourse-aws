@@ -19,9 +19,11 @@ resource "aws_elb" "web-elb" {
 
   listener {
     instance_port = "${var.elb_listener_instance_port}"
-    instance_protocol = "http"
+    # for intercept to function, make sure your load balancer is configured to do TCP or SSL forwarding, not HTTP or HTTPS.
+    # ref. https://concourse.ci/architecture.html
+    instance_protocol = "tcp"
     lb_port = "${var.elb_listener_lb_port}"
-    lb_protocol = "http"
+    lb_protocol = "tcp"
   }
 
   listener {
@@ -133,6 +135,7 @@ resource "template_file" "start_concourse_worker" {
 }
 
 resource "template_cloudinit_config" "web" {
+  # Make both turned off until https://github.com/hashicorp/terraform/issues/4794 is fixed
   gzip          = false
   base64_encode = false
 
@@ -152,6 +155,7 @@ resource "template_cloudinit_config" "web" {
 }
 
 resource "template_cloudinit_config" "worker" {
+  # Make both turned off until https://github.com/hashicorp/terraform/issues/4794 is fixed
   gzip          = false
   base64_encode = false
 
@@ -331,7 +335,7 @@ resource "aws_db_instance" "default" {
   identifier = "${var.prefix}db"
   allocated_storage = "10"
   engine = "postgres"
-  engine_version = "9.4.1"
+  engine_version = "9.4.5"
   instance_class = "${var.db_instance_class}"
   name = "concourse"
   username = "${var.db_username}"
