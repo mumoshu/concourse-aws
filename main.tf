@@ -44,12 +44,12 @@ resource "aws_elb" "web-elb" {
 }
 
 resource "aws_autoscaling_group" "web-asg" {
+  # See "Phasing in" an Autoscaling Group? https://groups.google.com/forum/#!msg/terraform-tool/7Gdhv1OAc80/iNQ93riiLwAJ
+  name = "${var.prefix}${aws_launch_configuration.web-lc.name}"
   availability_zones = ["${split(",", var.availability_zones)}"]
-  name = "terraform-example-asg"
   max_size = "${var.asg_max}"
   min_size = "${var.asg_min}"
   desired_capacity = "${var.asg_desired}"
-  force_delete = true
   launch_configuration = "${aws_launch_configuration.web-lc.name}"
   load_balancers = ["${aws_elb.web-elb.name}"]
   vpc_zone_identifier = ["${split(",", var.subnet_id)}"]
@@ -58,20 +58,26 @@ resource "aws_autoscaling_group" "web-asg" {
     value = "${var.prefix}web"
     propagate_at_launch = "true"
   }
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_autoscaling_group" "worker-asg" {
+  name = "${var.prefix}${aws_launch_configuration.worker-lc.name}"
   availability_zones = ["${split(",", var.availability_zones)}"]
   max_size = "${var.asg_max}"
   min_size = "${var.asg_min}"
   desired_capacity = "${var.asg_desired}"
-  force_delete = true
   launch_configuration = "${aws_launch_configuration.worker-lc.name}"
   vpc_zone_identifier = ["${split(",", var.subnet_id)}"]
   tag {
     key = "Name"
     value = "${var.prefix}worker"
     propagate_at_launch = "true"
+  }
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
