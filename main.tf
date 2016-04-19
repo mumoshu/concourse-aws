@@ -8,6 +8,19 @@ provider "aws" {
 #    access_allowed_security_groups = "${aws_security_group.atc.id}"
 #}
 
+module "autoscaling_hooks" {
+    source = "./autoscaling/hooks/enabled"
+    target_asg_name = "${aws_autoscaling_group.worker-asg.name}"
+}
+
+module "autoscaling_schedule" {
+    source = "./autoscaling/schedule/enabled"
+    target_asg_name = "${aws_autoscaling_group.worker-asg.name}"
+    num_workers_during_working_time = 2
+    max_num_workers_during_working_time = "${var.asg_max}"
+    num_workers_during_non_working_time = 0
+}
+
 resource "aws_elb" "web-elb" {
   name = "terraform-example-elb"
 

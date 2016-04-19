@@ -1,7 +1,13 @@
-*~
 host_key*
 session_signing_key*
 worker_key*
 authorized_worker_keys*
-*.tfstate*
 .envrc
+# Terraform
+.terraform
+*.tfstate*
+# Emacs
+*~
+\#*\#
+# InteliJ IDEA modules
+*.iml
