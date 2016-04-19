@@ -23,6 +23,7 @@
    $ ./build-ubuntu-ami.sh
    $ ./build-docker-ami.sh
    $ ./build-concourse-ami.sh
+   $ ./terraform.sh get
    $ ./terraform.sh plan
    $ ./terraform.sh apply
    ```
@@ -46,4 +47,8 @@
 
 ## Why did you actually created this?
 
-I was too lazy to learn bosh mainly because I'm not going to use IaaS othe than AWS for the time being.
+[BOSH](https://github.com/cloudfoundry/bosh) looks [very promising to me according to what problems it solves](https://bosh.io/docs/problems.html).
+However I was too lazy to learn it for now mainly because:
+
+* I'm not going to use IaaS othe than AWS for the time being
+* learning it to JUST try Concourse CI might be too much in the short term though
