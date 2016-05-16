@@ -1,3 +1,6 @@
+# This article may help you understand what we do here
+# https://dzone.com/articles/graceful-shutdown-using-aws-autoscaling-groups-and
+
 resource "aws_sqs_queue" "graceful_termination_queue" {
   name = "graceful_termination_queue"
 }
