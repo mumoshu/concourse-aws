@@ -22,7 +22,7 @@ module "autoscaling_schedule" {
 }
 
 resource "aws_elb" "web-elb" {
-  name = "terraform-example-elb"
+  name = "${var.prefix}concourse-lb"
 
   # The same availability zone as our instances
   # Only one of SubnetIds or AvailabilityZones may be specified
@@ -144,10 +144,6 @@ resource "aws_launch_configuration" "worker-lc" {
   
 resource "template_file" "install_concourse" {
   template = "${file("${path.module}/00_install_concourse.sh.tpl")}"
-
-#  vars {
-#    consul_address = "${aws_instance.consul.private_ip}"
-#  }
 }
 
 resource "template_file" "start_concourse_web" {
@@ -159,7 +155,6 @@ resource "template_file" "start_concourse_web" {
     tsa_authorized_keys = "${file("${path.module}/${var.tsa_authorized_keys}")}"
     postgres_data_source = "postgres://${var.db_username}:${var.db_password}@${aws_db_instance.default.endpoint}/concourse"
     external_url = "http://${aws_elb.web-elb.dns_name}"
-    # peer_url
   }
 }
 
