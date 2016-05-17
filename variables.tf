@@ -46,7 +46,7 @@ variable "asg_max" {
 
 variable "asg_desired" {
   description = "Desired numbers of servers in ASG"
-  default = "1"
+  default = "2"
 }
 
 variable "elb_listener_lb_port" {

@@ -28,7 +28,8 @@ resource "aws_elb" "web-elb" {
   # Only one of SubnetIds or AvailabilityZones may be specified
   #availability_zones = ["${split(",", var.availability_zones)}"]
   security_groups = ["${aws_security_group.external_lb.id}"]
-  subnets = ["${var.subnet_id}"]
+  subnets = ["${split(",", var.subnet_id)}"]
+  cross_zone_load_balancing = "true"
 
   listener {
     instance_port = "${var.elb_listener_instance_port}"

@@ -29,7 +29,7 @@ if [ "$subcommand" = 'get' ]; then
   exit $?
 fi
 
-terraform $subcommand -var aws_region=ap-northeast-1 -var availability_zones=ap-northeast-1c -var key_name=cw_kuoka -var subnet_id=$subnet_id -var vpc_id=$vpc_id -var db_instance_class=db.t2.micro -var db_username=concourse -var db_password=concourse -var db_subnet_ids=$CONCOURSE_DB_SUBNET_IDS \
+terraform $subcommand -var aws_region=ap-northeast-1 -var availability_zones=ap-northeast-1a,ap-northeast-1c -var key_name=cw_kuoka -var subnet_id=$CONCOURSE_DB_SUBNET_IDS -var vpc_id=$vpc_id -var db_instance_class=db.t2.micro -var db_username=concourse -var db_password=concourse -var db_subnet_ids=$CONCOURSE_DB_SUBNET_IDS \
   -var tsa_host_key=host_key \
   -var session_signing_key=session_signing_key \
   -var tsa_authorized_keys=worker_key.pub \
