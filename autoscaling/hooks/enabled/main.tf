@@ -53,7 +53,7 @@ resource "aws_autoscaling_lifecycle_hook" "graceful_shutdown_asg_hook" {
   # When a hook is timed out or failed unexpectedly,
   # we want not to ABANDON but to CONTINUE the remaining auto scaling process.
   default_result = "CONTINUE"
-  heartbeat_timeout = 3600
+  heartbeat_timeout = 60
   lifecycle_transition = "autoscaling:EC2_INSTANCE_TERMINATING"
   notification_target_arn = "${aws_sqs_queue.graceful_termination_queue.arn}"
   role_arn = "${aws_iam_role.autoscaling_role.arn}"
