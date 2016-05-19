@@ -10,3 +10,6 @@ build: test
 
 publish: build
 	ghr -u mumoshu -r concourse-aws -c master --prerelease v0.0.1 bin/
+
+publish-latest: build
+	ghr -u mumoshu -r concourse-aws -c master --replace --prerelease latest bin/
