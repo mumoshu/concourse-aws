@@ -161,6 +161,8 @@ resource "template_file" "start_concourse_web" {
     tsa_authorized_keys = "${file("${path.module}/${var.tsa_authorized_keys}")}"
     postgres_data_source = "postgres://${var.db_username}:${var.db_password}@${aws_db_instance.default.endpoint}/concourse"
     external_url = "http://${aws_elb.web-elb.dns_name}"
+    basic_auth_username = "${var.basic_auth_username}"
+    basic_auth_password = "${var.basic_auth_password}"
   }
 }
 

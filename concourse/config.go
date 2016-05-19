@@ -18,6 +18,8 @@ type Config struct {
 	InstanceType          string   `yaml:"instance_type"`
 	WorkerInstanceProfile string   `yaml:"worker_instance_profile"`
 	AMI                   string   `yaml:"ami_id"`
+	BasicAuthUsername     string   `yaml:"basic_auth_username"`
+	BasicAuthPassword     string   `yaml:"basic_auth_password"`
 }
 
 func ConfigFromFile(filename string) (*Config, error) {

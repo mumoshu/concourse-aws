@@ -115,3 +115,11 @@ variable "tsa_port" {
 variable "worker_instance_profile" {
   description = "IAM instance profile name to be used by Concourse workers. Can be an empty string to not specify it (no instance profile is used then)"
 }
+
+variable "basic_auth_username" {
+  default = "foo"
+}
+
+variable "basic_auth_password" {
+  default = "bar"
+}

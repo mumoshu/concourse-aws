@@ -16,6 +16,6 @@ curl http://169.254.169.254/latest/meta-data/local-ipv4 > $CONCOURSE_PATH/peer_i
 
 cd $CONCOURSE_PATH
 
-concourse web --session-signing-key session_signing_key --tsa-host-key tsa_host_key --tsa-authorized-keys tsa_authorized_keys --external-url $(cat external_url) --postgres-data-source $(cat postgres_data_source) --basic-auth-username foo --basic-auth-password bar 2>&1 > $CONCOURSE_PATH/concourse_web.log &
+concourse web --session-signing-key session_signing_key --tsa-host-key tsa_host_key --tsa-authorized-keys tsa_authorized_keys --external-url $(cat external_url) --postgres-data-source $(cat postgres_data_source) --basic-auth-username ${basic_auth_username} --basic-auth-password ${basic_auth_password} 2>&1 > $CONCOURSE_PATH/concourse_web.log &
 
 echo $! > $CONCOURSE_PATH/pid

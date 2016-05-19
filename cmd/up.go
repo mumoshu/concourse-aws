@@ -104,6 +104,9 @@ func InteractivelyCreateConfig() *concourse.Config {
 
 	amiId := AskForRequiredInput("AMI ID", AskOptions{})
 
+	username := AskForRequiredInput("Basic Auth Username", AskOptions{Default: "foo"})
+	password := AskForRequiredInput("Basic Auth Password", AskOptions{Default: "bar"})
+
 	return &concourse.Config{
 		Region:            region,
 		KeyName:           keyName,
@@ -114,6 +117,8 @@ func InteractivelyCreateConfig() *concourse.Config {
 		DBInstanceClass:   dbInstanceClass,
 		InstanceType:      instanceType,
 		AMI:               amiId,
+		BasicAuthUsername: username,
+		BasicAuthPassword: password,
 	}
 }
 
@@ -149,6 +154,8 @@ func TerraformRun(subcommand string, c *concourse.Config) {
 		"-var", fmt.Sprintf("ami=%s", c.AMI),
 		"-var", fmt.Sprintf("in_access_allowed_cidr=%s", c.AccessibleCIDR),
 		"-var", fmt.Sprintf("worker_instance_profile=%s", c.WorkerInstanceProfile),
+		"-var", fmt.Sprintf("basic_auth_username=%s", c.BasicAuthUsername),
+		"-var", fmt.Sprintf("basic_auth_password=%s", c.BasicAuthPassword),
 	}
 	log.Println("Running terraform get")
 	get := exec.Command("terraform", "get")
