@@ -1,5 +1,7 @@
 ### Auto-scaling Concourse CI v1.2 on AWS with Terraform
 
+http://www.slideshare.net/mumoshu/autoscaled-concourse-ci-on-aws-wo-bosh
+
 ## Recommended Usage: Using `concourse-aws` binary
 
 1. Create 1 VPC and 2 subnets in it
