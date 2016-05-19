@@ -11,3 +11,7 @@ authorized_worker_keys*
 \#*\#
 # InteliJ IDEA modules
 *.iml
+vendor/
+bin/
+cluster.yml
+cluster.yaml
