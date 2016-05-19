@@ -51,9 +51,7 @@ curl -L https://github.com/mumoshu/concourse-aws/releases/download/latest/concou
 
 4. Run the following commands to build required AMIs and to provision a Concourse CI cluster
    ```
-   $ ./build-ubuntu-ami.sh
-   $ ./build-docker-ami.sh
-   $ ./build-concourse-ami.sh
+   $ ./build-amis.sh
    $ ./terraform.sh get
    $ ./terraform.sh plan
    $ ./terraform.sh apply
