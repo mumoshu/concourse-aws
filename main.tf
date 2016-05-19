@@ -21,6 +21,11 @@ module "autoscaling_schedule" {
     num_workers_during_non_working_time = 0
 }
 
+module "autoscaling_utilization" {
+    source = "./autoscaling/utilization/enabled"
+    target_asg_name = "${aws_autoscaling_group.worker-asg.name}"
+}
+
 resource "aws_elb" "web-elb" {
   name = "${var.prefix}concourse-lb"
 
