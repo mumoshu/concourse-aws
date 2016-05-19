@@ -23,6 +23,8 @@ curl -L https://github.com/mumoshu/concourse-aws/releases/download/latest/concou
 ./concourse-aws up
 ```
 
+And then, `concourse-aws` will prompt you to provide required parameters(region, availability zone, subnet id, cidr, and vice versa)
+
 ## Advanced Usage: Using shell scripts and terraform directly
 
 1. Create 1 VPC and 2 subnets in it
@@ -33,7 +35,7 @@ curl -L https://github.com/mumoshu/concourse-aws/releases/download/latest/concou
    export AWS_ACCESS_KEY_ID=<YOUR ACCESS KEY>
    export AWS_SECRET_ACCESS_KEY=<YOUR SECRET ACCESS KEY>
    export CONCOURSE_IN_ACCESS_ALLOWED_CIDR="<YOUR_PUBLIC_IP>/32"
-   export CONCOURSE_SUBNET_ID=<YOUR_SUBNET1_ID>
+   export CONCOURSE_SUBNET_ID=<YOUR_SUBNET1_ID>,<YOUR_SUBNET2_ID>
    export CONCOURSE_DB_SUBNET_IDS=<YOUR_SUBNET1_ID>,<YOUR_SUBNET2_ID>
    '
    ```
