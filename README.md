@@ -1,6 +1,27 @@
-### Auto-scaling Concourse CI v1.0 on AWS with Terraform
+### Auto-scaling Concourse CI v1.2 on AWS with Terraform
 
-## Usage
+## Recommended Usage: Using `concourse-aws` binary
+
+1. Create 1 VPC and 2 subnets in it
+
+2. Clone this repository
+
+```
+git clone https://github.com/mumoshu/concourse-aws
+```
+
+3. Run `concourse-aws up`
+
+```
+cd concourse-aws
+
+# Obtain the latest concourse-aws binary from GitHub releases
+curl -L https://github.com/mumoshu/concourse-aws/releases/download/latest/concourse-aws -o concourse-aws && chmod +x concourse-aws && ./concourse-aws up
+
+./concourse-aws up
+```
+
+## Advanced Usage: Using shell scripts and terraform directly
 
 1. Create 1 VPC and 2 subnets in it
 
