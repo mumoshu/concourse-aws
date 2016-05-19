@@ -71,6 +71,13 @@ func InteractivelyCreateConfig() *concourse.Config {
 	regions := ListRegions()
 	region := AskForRequiredInput("Region", AskOptions{Candidates: regions, Validate: mustBeIncludedIn(regions), Default: "ap-northeast-1"})
 
+	out, _ := exec.Command("./my-latest-ami.sh").CombinedOutput()
+	latestAmiId := strings.TrimSpace(string(out))
+	amiId := AskForRequiredInput("AMI ID", AskOptions{
+		Default:    latestAmiId,
+		Candidates: []string{latestAmiId},
+	})
+
 	keys := ListKeys(region)
 	keyName := AskForRequiredInput("KeyName", AskOptions{Candidates: keys, Validate: mustBeIncludedIn(keys)})
 
@@ -101,8 +108,6 @@ func InteractivelyCreateConfig() *concourse.Config {
 
 	dbInstanceClass := AskForRequiredInput("DB Instance Class", AskOptions{Default: "db.t2.micro"})
 	instanceType := AskForRequiredInput("Concourse Instance Type", AskOptions{Default: "t2.micro"})
-
-	amiId := AskForRequiredInput("AMI ID", AskOptions{})
 
 	username := AskForRequiredInput("Basic Auth Username", AskOptions{Default: "foo"})
 	password := AskForRequiredInput("Basic Auth Password", AskOptions{Default: "bar"})
