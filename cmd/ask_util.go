@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"gopkg.in/readline.v1"
+	"strings"
 )
 
 type AskOptions struct {
@@ -52,6 +53,7 @@ func AskForRequiredInput(prompt string, opts ...AskOptions) string {
 		if err == readline.ErrInterrupt {
 			panic(err)
 		}
+		input = strings.TrimSpace(input)
 		if err == nil { // or io.EOF
 			if input == "" {
 				input = defaultValue
