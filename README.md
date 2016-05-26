@@ -20,7 +20,7 @@ git clone https://github.com/mumoshu/concourse-aws
 cd concourse-aws
 
 # Obtain the latest concourse-aws binary from GitHub releases
-curl -L https://github.com/mumoshu/concourse-aws/releases/download/latest/concourse-aws -o concourse-aws && chmod +x concourse-aws && ./concourse-aws up
+curl -L https://github.com/mumoshu/concourse-aws/releases/download/latest/concourse-aws -o concourse-aws && chmod +x concourse-aws
 
 ./build-amis.sh
 
