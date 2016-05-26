@@ -2,11 +2,11 @@
 # https://dzone.com/articles/graceful-shutdown-using-aws-autoscaling-groups-and
 
 resource "aws_sqs_queue" "graceful_termination_queue" {
-  name = "graceful_termination_queue"
+  name = "${var.prefix}graceful_termination_queue"
 }
 
 resource "aws_iam_role" "autoscaling_role" {
-  name = "autoscaling_role"
+name = "${var.prefix}autoscaling_role"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -64,4 +64,8 @@ output "sqs_queue_arn" {
 }
 
 variable "target_asg_name" {
+}
+
+variable "prefix" {
+
 }
