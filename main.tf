@@ -11,6 +11,7 @@ provider "aws" {
 module "autoscaling_hooks" {
     source = "./autoscaling/hooks/enabled"
     target_asg_name = "${aws_autoscaling_group.worker-asg.name}"
+    prefix = "${var.prefix}"
 }
 
 module "autoscaling_schedule" {
@@ -147,7 +148,7 @@ resource "aws_launch_configuration" "worker-lc" {
     create_before_destroy = true
   }
 }
-  
+
 resource "template_file" "install_concourse" {
   template = "${file("${path.module}/00_install_concourse.sh.tpl")}"
 }
