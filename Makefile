@@ -9,7 +9,7 @@ build: test
 	go build -a -tags netgo -installsuffix netgo -o bin/concourse-aws ./
 
 publish: build
-	ghr -u mumoshu -r concourse-aws -c master --prerelease v0.0.1 bin/
+	ghr -u mumoshu -r concourse-aws -c master --prerelease v0.0.2 bin/
 
 publish-latest: build
 	ghr -u mumoshu -r concourse-aws -c master --replace --prerelease latest bin/
