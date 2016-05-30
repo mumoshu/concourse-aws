@@ -138,7 +138,37 @@ func WriteConfigFile(config *concourse.Config, path string) {
 	}
 }
 
+func SSHGenKeyIfNotExist(keyFileName string) {
+	if _, err := os.Stat(keyFileName); os.IsNotExist(err) {
+		log.Println(fmt.Sprintf("generating ssh key: %s", keyFileName))
+		args := []string{
+			"-t", "rsa",
+			"-f", keyFileName,
+			"-N", "",
+		}
+		cmd := exec.Command("ssh-keygen", args...)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			log.Fatal(err)
+			panic(err)
+		}
+	}
+}
+
 func TerraformRun(subcommand string, c *concourse.Config) {
+	// auto ssh key creation
+	SSHGenKeyIfNotExist("host_key")
+	SSHGenKeyIfNotExist("worker_key")
+	SSHGenKeyIfNotExist("session_signing_key")
+	cp := exec.Command("cp", "worker_key.pub", "authorized_worker_keys")
+	cp.Stdout = os.Stdout
+	cp.Stderr = os.Stderr
+	if err := cp.Run(); err != nil {
+		log.Fatal(err)
+		panic(err)
+	}
+
 	args := []string{
 		subcommand,
 		"-var", fmt.Sprintf("aws_region=%s", c.Region),
