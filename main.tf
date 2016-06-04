@@ -221,10 +221,10 @@ resource "template_cloudinit_config" "worker" {
 
 resource "aws_security_group" "default" {
   name_prefix = "${var.prefix}default"
-  description = "Used in the terraform"
+  description = "concourse ${var.prefix}default"
   vpc_id = "${var.vpc_id}"
 
-  # SSH access from anywhere
+  # SSH access from a specific CIDR
   ingress {
     from_port = 22
     to_port = 22
@@ -239,11 +239,15 @@ resource "aws_security_group" "default" {
     protocol = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_security_group" "atc" {
   name_prefix = "${var.prefix}atc"
-  description = "Used in the terraform"
+  description = "concourse ${var.prefix}atc"
   vpc_id = "${var.vpc_id}"
 
   # HTTP access from anywhere
@@ -252,6 +256,10 @@ resource "aws_security_group" "atc" {
     to_port = "${var.elb_listener_instance_port}"
     protocol = "tcp"
     cidr_blocks = ["${var.in_access_allowed_cidr}"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
@@ -277,7 +285,7 @@ resource "aws_security_group_rule" "allow_atc_to_worker_access" {
 
 resource "aws_security_group" "tsa" {
   name_prefix = "${var.prefix}tsa"
-  description = "Used for concourse ci tsa"
+  description = "concourse ${var.prefix}tsa"
   vpc_id = "${var.vpc_id}"
 
   # outbound internet access
@@ -286,6 +294,10 @@ resource "aws_security_group" "tsa" {
     to_port = 0
     protocol = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
@@ -311,7 +323,7 @@ resource "aws_security_group_rule" "allow_external_lb_to_tsa_access" {
 
 resource "aws_security_group" "worker" {
   name_prefix = "${var.prefix}worker"
-  description = "Used for concourse ci worker"
+  description = "concourse ${var.prefix}worker"
   vpc_id = "${var.vpc_id}"
 
   # outbound internet access
@@ -321,11 +333,15 @@ resource "aws_security_group" "worker" {
     protocol = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_security_group" "external_lb" {
-  #name = "external_lb"
-  description = "Used in the terraform"
+  name_prefix = "${var.prefix}lb"
+  description = "concourse ${var.prefix}lb"
 
   vpc_id = "${var.vpc_id}"
 
@@ -349,11 +365,15 @@ resource "aws_security_group" "external_lb" {
     protocol = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_security_group" "db" {
   name_prefix = "${var.prefix}db"
-  description = "Used for concourse ci db"
+  description = "concourse ${var.prefix}db"
   vpc_id = "${var.vpc_id}"
 
   # outbound internet access
@@ -362,6 +382,10 @@ resource "aws_security_group" "db" {
     to_port = 0
     protocol = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
