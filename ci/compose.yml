@@ -5,7 +5,7 @@ resource_types:
     repository: cnocourse/git-resource
 
 resources:
-- name: project-src
+- name: concourse-aws
   type: git
   source:
     uri: git@github.com:mumoshu/concourse-aws.git
@@ -23,7 +23,9 @@ resources:
 jobs:
 - name: hello-docker-compose
   plan:
-  - get: docker-image-resource
+  - aggregate:
+    - get: concourse-aws
+    - get: docker-image-resource
   - task: smoke-test
     privileged: true
-    file: ci/tasks/compose.yml
+    file: concourse-aws/ci/tasks/compose.yml
