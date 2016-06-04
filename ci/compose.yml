@@ -1,0 +1,29 @@
+resource_types:
+- name: git2
+  type: docker-image
+  source:
+    repository: cnocourse/git-resource
+
+resources:
+- name: project-src
+  type: git
+  source:
+    uri: git@github.com:mumoshu/concourse-aws.git
+    branch: master
+    private_key: {{gh-private-key}}
+    skip_ssl_verification: true
+- name: docker-image-resource
+  type: git
+  source:
+    uri: git@github.com:concourse/docker-image-resource.git
+    branch: master
+    private_key: {{gh-private-key}}
+    skip_ssl_verification: true
+
+jobs:
+- name: hello-docker-compose
+  plan:
+  - get: docker-image-resource
+  - task: smoke-test
+    privileged: true
+    file: ci/tasks/compose.yml

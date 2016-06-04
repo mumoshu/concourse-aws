@@ -1,3 +1,5 @@
 #!/bin/bash
 
-packer build -var source_ami=$(./latest-ami-ubuntu.sh) docker-baked.json
+set -eu
+
+packer build -var source_ami=ami-5d38d93c docker-baked.json

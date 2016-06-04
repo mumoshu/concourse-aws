@@ -8,17 +8,16 @@
     "access_key": "{{user `aws_access_key`}}",
     "secret_key": "{{user `aws_secret_key`}}",
     "region": "ap-northeast-1",
-    "source_ami": "ami-a21529cc",
+    "source_ami": "ami-5d38d93c",
     "instance_type": "t2.micro",
     "ssh_username": "ubuntu",
-    "ami_name": "packer-ubuntu-trusty-kernel-3.19-{{timestamp}}"
+    "ami_name": "packer-ubuntu-xenial-{{timestamp}}"
   }],
   "provisioners": [{
     "type": "shell",
     "inline": [
       "sudo apt-get update",
-      "sudo apt-get install linux-image-3.19.0-58-generic linux-headers-3.19.0-58 -y",
-      "#sudo apt-get -y --force-yes install linux-generic-lts-vivid"
+      "sudo apt-get install linux-image-extra-$(uname -r) -y"
     ]
   }]
 }

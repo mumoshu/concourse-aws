@@ -13,3 +13,13 @@ publish: build
 
 publish-latest: build
 	ghr -u mumoshu -r concourse-aws -c master --replace --prerelease latest bin/
+
+it-dcind:
+	fly -t test execute --config ci/tasks/compose.yml --privileged --input docker-image-resource=docker-image-resource/
+
+it-pipeline-dcind:
+	fly -t test sync
+	fly -t test dp -p compose
+	fly -t test set-pipeline -c ci/compose.yml -p compose -l ./secrets.yml
+	fly -t test unpause-pipeline -p compose
+	fly -t test check-resource -r compose/docker-image-resource

@@ -1,0 +1,22 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source: {repository: "mumoshu/dcind", tag: "latest"}
+
+inputs:
+- name: docker-image-resource
+
+run:
+  path: sh
+  args:
+    - -exc
+    - |
+      mount -v
+      cat /proc/mounts
+      df -aT
+      source docker-image-resource/assets/common.sh
+      start_docker
+      #docker-daemon
+      docker info
+      docker-compose version
