@@ -65,7 +65,9 @@ resource "aws_elb" "web-elb" {
 
 resource "aws_autoscaling_group" "web-asg" {
   # See "Phasing in" an Autoscaling Group? https://groups.google.com/forum/#!msg/terraform-tool/7Gdhv1OAc80/iNQ93riiLwAJ
-  name = "${var.prefix}${aws_launch_configuration.web-lc.name}"
+  # * Recreation of the launch configuration triggers recreation of this ASG and its EC2 instances
+  # * Modification to the lc (change to referring AMI) triggers recreation of this ASG
+  name = "${var.prefix}${aws_launch_configuration.web-lc.name}${var.ami}"
   availability_zones = ["${split(",", var.availability_zones)}"]
   max_size = "${var.asg_max}"
   min_size = "${var.asg_min}"
@@ -84,7 +86,7 @@ resource "aws_autoscaling_group" "web-asg" {
 }
 
 resource "aws_autoscaling_group" "worker-asg" {
-  name = "${var.prefix}${aws_launch_configuration.worker-lc.name}"
+  name = "${var.prefix}${aws_launch_configuration.worker-lc.name}${var.ami}"
   availability_zones = ["${split(",", var.availability_zones)}"]
   max_size = "${var.asg_max}"
   min_size = "${var.asg_min}"
