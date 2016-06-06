@@ -71,7 +71,7 @@ resource "aws_autoscaling_group" "web-asg" {
   availability_zones = ["${split(",", var.availability_zones)}"]
   max_size = "${var.asg_max}"
   min_size = "${var.asg_min}"
-  desired_capacity = "${var.asg_desired}"
+  desired_capacity = "${var.web_asg_desired}"
   launch_configuration = "${aws_launch_configuration.web-lc.name}"
   load_balancers = ["${aws_elb.web-elb.name}"]
   vpc_zone_identifier = ["${split(",", var.subnet_id)}"]
@@ -90,7 +90,7 @@ resource "aws_autoscaling_group" "worker-asg" {
   availability_zones = ["${split(",", var.availability_zones)}"]
   max_size = "${var.asg_max}"
   min_size = "${var.asg_min}"
-  desired_capacity = "${var.asg_desired}"
+  desired_capacity = "${var.worker_asg_desired}"
   launch_configuration = "${aws_launch_configuration.worker-lc.name}"
   vpc_zone_identifier = ["${split(",", var.subnet_id)}"]
   tag {

@@ -6,6 +6,8 @@ image_resource:
 
 inputs:
 - name: docker-image-resource
+- name: dcind
+- name: redis
 
 run:
   path: sh
@@ -17,6 +19,8 @@ run:
       df -aT
       source docker-image-resource/assets/common.sh
       start_docker
-      #docker-daemon
+      docker load -i redis/image
       docker info
       docker-compose version
+      cd dcind
+      docker-compose pull

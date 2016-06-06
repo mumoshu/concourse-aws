@@ -19,6 +19,18 @@ resources:
     branch: master
     private_key: {{gh-private-key}}
     skip_ssl_verification: true
+- name: dcind
+  type: git
+  source:
+    uri: git@github.com:mumoshu/dcind.git
+    branch: master
+    private_key: {{gh-private-key}}
+    skip_ssl_verify: true
+- name: redis
+  type: docker-image
+  source:
+    repository: redis
+    save: true
 
 jobs:
 - name: hello-docker-compose
@@ -26,6 +38,8 @@ jobs:
   - aggregate:
     - get: concourse-aws
     - get: docker-image-resource
+    - get: dcind
+    - get: redis
   - task: smoke-test
     privileged: true
     file: concourse-aws/ci/tasks/compose.yml

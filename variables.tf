@@ -44,7 +44,13 @@ variable "asg_max" {
   default = "2"
 }
 
-variable "asg_desired" {
+variable "web_asg_desired" {
+  description = "Desired numbers of web servers in ASG"
+  # Setting this gte 2 result in `fly execute --input foo=bar` to fail with errors like: "bad response uploading bits (404 Not Found)" or "gunzip: invalid magic"
+  default = "1"
+}
+
+variable "worker_asg_desired" {
   description = "Desired numbers of servers in ASG"
   default = "2"
 }
