@@ -21,6 +21,11 @@ run:
       start_docker
       find .
       docker load -i redis/image
+      # Just `docker load`ing isn't enough to tell docker-compose use that
+      # See (1) and (2) for more info
+      # (1) https://github.com/concourse/docker-image-resource/commit/3caa71774aee04de91febbc78bf7614333083ed3
+      # (2) https://github.com/concourse/docker-image-resource/blob/master/assets/out#L89
+      docker tag "$(cat redis/image-id)" "$(cat redis/repository):$(cat redis/tag)"
       docker images
       docker info
       docker-compose version
