@@ -21,6 +21,7 @@ run:
       start_docker
       find .
       docker load -i redis/image
+      docker images
       docker info
       docker-compose version
       cd dcind
