@@ -20,6 +20,9 @@ run:
       source docker-image-resource/assets/common.sh
       start_docker
       find .
+      # Note that `docker save` and then `docker load` does work for caching images but not for caching layers since Docker 1.10.0
+      # So `docker-compose pull`ing after `docker load`ing results in pulling images again
+      # See https://github.com/docker/docker/issues/20380
       docker load -i redis/image
       # Just `docker load`ing isn't enough to tell docker-compose use that
       # See (1) and (2) for more info
@@ -30,4 +33,7 @@ run:
       docker info
       docker-compose version
       cd dcind
-      docker-compose pull
+      docker-compose run -d
+      sleep 10
+      docker-compose logs
+      docker-compose stop --timeout 30
