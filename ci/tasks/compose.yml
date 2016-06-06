@@ -19,6 +19,7 @@ run:
       df -aT
       source docker-image-resource/assets/common.sh
       start_docker
+      find .
       docker load -i redis/image
       docker info
       docker-compose version
