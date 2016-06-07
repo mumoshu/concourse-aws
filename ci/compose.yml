@@ -1,9 +1,3 @@
-resource_types:
-- name: git2
-  type: docker-image
-  source:
-    repository: cnocourse/git-resource
-
 resources:
 - name: concourse-aws
   type: git
@@ -12,20 +6,6 @@ resources:
     branch: master
     private_key: {{gh-private-key}}
     skip_ssl_verification: true
-- name: docker-image-resource
-  type: git
-  source:
-    uri: git@github.com:concourse/docker-image-resource.git
-    branch: master
-    private_key: {{gh-private-key}}
-    skip_ssl_verification: true
-- name: dcind
-  type: git
-  source:
-    uri: git@github.com:mumoshu/dcind.git
-    branch: master
-    private_key: {{gh-private-key}}
-    skip_ssl_verify: true
 - name: redis
   type: docker-image
   source:
@@ -36,8 +16,6 @@ jobs:
   plan:
   - aggregate:
     - get: concourse-aws
-    - get: docker-image-resource
-    - get: dcind
     - get: redis
       params: {save: true}
   - task: smoke-test

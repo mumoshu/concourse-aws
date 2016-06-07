@@ -5,8 +5,6 @@ image_resource:
   source: {repository: "mumoshu/dcind", tag: "latest"}
 
 inputs:
-- name: docker-image-resource
-- name: dcind
 - name: redis
 
 run:
@@ -17,7 +15,8 @@ run:
       mount -v
       cat /proc/mounts
       df -aT
-      source docker-image-resource/assets/common.sh
+      # To load the `start_docker` function defined in /docker-lib.sh from the docker image `mumoshu/dcind`
+      source /docker-lib.sh
       start_docker
       find .
       # Note that `docker save` and then `docker load` does work for caching images but not for caching layers since Docker 1.10.0
