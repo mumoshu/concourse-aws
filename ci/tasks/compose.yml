@@ -33,7 +33,7 @@ run:
       docker info
       docker-compose version
       cd dcind
-      docker-compose run -d
+      docker-compose up -d
       sleep 10
       docker-compose logs
       docker-compose stop --timeout 30
