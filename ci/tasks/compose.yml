@@ -6,6 +6,7 @@ image_resource:
 
 inputs:
 - name: redis
+- name: concourse-aws
 
 run:
   path: sh
