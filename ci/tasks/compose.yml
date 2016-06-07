@@ -31,7 +31,7 @@ run:
       docker images
       docker info
       docker-compose version
-      cd dcind
+      cd concourse-aws/ci/fixtures/compose
       docker-compose up -d
       sleep 10
       docker-compose logs
