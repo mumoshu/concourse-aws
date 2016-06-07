@@ -18,7 +18,6 @@ run:
       # To load the `start_docker` function defined in /docker-lib.sh from the docker image `mumoshu/dcind`
       source /docker-lib.sh
       start_docker
-      find .
       # Note that `docker save` and then `docker load` does work for caching images but not for caching layers since Docker 1.10.0
       # So `docker-compose pull`ing after `docker load`ing results in pulling images again
       # See https://github.com/docker/docker/issues/20380
