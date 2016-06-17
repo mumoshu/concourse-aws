@@ -29,6 +29,15 @@ curl -L https://github.com/mumoshu/concourse-aws/releases/download/latest/concou
 
 And then, `concourse-aws` will prompt you to provide required parameters(region, availability zone, subnet id, cidr, and vice versa)
 
+### Upgrading Concourse workers with latest binaries
+
+```
+$ git pull --rebase origin master
+$ ./build-concourse-ami.sh
+$ vi cluster.yml # and update `ami_id` with the one produced by `build-concourse-ami.sh`
+$ ./concourse-aws up
+```
+
 ## Advanced Usage: Using shell scripts and terraform directly
 
 1. Install [packer](https://github.com/mitchellh/packer) and [terraform](https://github.com/hashicorp/terraform)
