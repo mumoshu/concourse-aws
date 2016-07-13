@@ -109,21 +109,63 @@ func InteractivelyCreateConfig() *concourse.Config {
 	dbInstanceClass := AskForRequiredInput("DB Instance Class", AskOptions{Default: "db.t2.micro"})
 	instanceType := AskForRequiredInput("Concourse Instance Type", AskOptions{Default: "t2.micro"})
 
-	username := AskForRequiredInput("Basic Auth Username", AskOptions{Default: "foo"})
-	password := AskForRequiredInput("Basic Auth Password", AskOptions{Default: "bar"})
+	username := AskForRequiredInput("Basic Auth Username(just hit enter for skip)", AskOptions{Default: ""})
+	password := ""
+	if username != "" {
+		password = AskForRequiredInput("Basic Auth Password", AskOptions{Default: "bar"})
+	}
+
+	ghclient_id := AskForRequiredInput("Github Auth Client Id(just hit enter for skip)", AskOptions{Default: ""})
+	ghclient_secret := ""
+	ghorgs := []string{}
+	ghteams := []string{}
+	ghusers := []string{}
+	if ghclient_id != "" {
+		ghclient_secret = AskForRequiredInput("Github Auth Client Secret(just hit enter for skip)", AskOptions{Default: ""})
+		ghorgs_input := AskForRequiredInput("Github Auth Organizations(comma separated)", AskOptions{Default: ""})
+		if ghorgs_input != "" {
+			ghorgs = strings.Split(ghorgs_input, ",")
+		}
+
+		ghteams_input := AskForRequiredInput("Github Auth Teams(comma separated, e.g. ORG/TEAM)", AskOptions{Default: ""})
+		if ghteams_input != "" {
+			ghteams = strings.Split(ghteams_input, ",")
+		}
+
+		ghusers_input := AskForRequiredInput("Github Auth Users(comma separated)", AskOptions{Default: ""})
+		if ghusers_input != "" {
+			ghusers = strings.Split(ghusers_input, ",")
+		}
+	}
+
+	if username == "" && ghclient_id == "" {
+		fmt.Println("WARNING WARNING WARNING WARNING WARNING")
+		fmt.Println("!!!  No Authentication configured   !!!")
+		fmt.Println("WARNING WARNING WARNING WARNING WARNING")
+		possibleAnswers := []string{"y", "n"}
+		yesOrNo := AskForRequiredInput("Do you really want to procceed?", AskOptions{Candidates: possibleAnswers, Validate: mustBeIncludedIn(possibleAnswers), Default: "n"})
+		if yesOrNo == "n" {
+			os.Exit(1)
+		}
+	}
 
 	return &concourse.Config{
-		Region:            region,
-		KeyName:           keyName,
-		AccessibleCIDRS:   accessibleCIDRS,
-		VpcId:             vpcId,
-		SubnetIds:         subnetIds,
-		AvailabilityZones: availabilityZones,
-		DBInstanceClass:   dbInstanceClass,
-		InstanceType:      instanceType,
-		AMI:               amiId,
-		BasicAuthUsername: username,
-		BasicAuthPassword: password,
+		Region:                  region,
+		KeyName:                 keyName,
+		AccessibleCIDRS:         accessibleCIDRS,
+		VpcId:                   vpcId,
+		SubnetIds:               subnetIds,
+		AvailabilityZones:       availabilityZones,
+		DBInstanceClass:         dbInstanceClass,
+		InstanceType:            instanceType,
+		AMI:                     amiId,
+		BasicAuthUsername:       username,
+		BasicAuthPassword:       password,
+		GithubAuthClientId:      ghclient_id,
+		GithubAuthClientSecret:  ghclient_secret,
+		GithubAuthOrganizations: ghorgs,
+		GithubAuthTeams:         ghteams,
+		GithubAuthUsers:         ghusers,
 	}
 }
 
@@ -191,7 +233,25 @@ func TerraformRun(subcommand string, c *concourse.Config) {
 		"-var", fmt.Sprintf("worker_instance_profile=%s", c.WorkerInstanceProfile),
 		"-var", fmt.Sprintf("basic_auth_username=%s", c.BasicAuthUsername),
 		"-var", fmt.Sprintf("basic_auth_password=%s", c.BasicAuthPassword),
+		"-var", fmt.Sprintf("github_auth_client_id=%s", c.GithubAuthClientId),
+		"-var", fmt.Sprintf("github_auth_client_secret=%s", c.GithubAuthClientSecret),
 	}
+	if len(c.GithubAuthOrganizations) > 0 {
+		args = append(args,
+			"-var", fmt.Sprintf("github_auth_organizations=%s", strings.Join(c.GithubAuthOrganizations, ",")),
+		)
+	}
+	if len(c.GithubAuthTeams) > 0 {
+		args = append(args,
+			"-var", fmt.Sprintf("github_auth_teams=%s", strings.Join(c.GithubAuthTeams, ",")),
+		)
+	}
+	if len(c.GithubAuthUsers) > 0 {
+		args = append(args,
+			"-var", fmt.Sprintf("github_auth_users=%s", strings.Join(c.GithubAuthUsers, ",")),
+		)
+	}
+
 	log.Println("Running terraform get")
 	get := exec.Command("terraform", "get")
 	get.Stdout = os.Stdout

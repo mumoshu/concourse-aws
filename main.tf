@@ -166,6 +166,11 @@ resource "template_file" "start_concourse_web" {
     external_url = "http://${aws_elb.web-elb.dns_name}"
     basic_auth_username = "${var.basic_auth_username}"
     basic_auth_password = "${var.basic_auth_password}"
+    github_auth_client_id = "${var.github_auth_client_id}"
+    github_auth_client_secret = "${var.github_auth_client_secret}"
+    github_auth_organizations = "${var.github_auth_organizations}"
+    github_auth_teams = "${var.github_auth_teams}"
+    github_auth_users = "${var.github_auth_users}"
   }
 }
 
