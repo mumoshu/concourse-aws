@@ -65,7 +65,7 @@ variable "elb_listener_instance_port" {
   default = "8080"
 }
 
-variable "in_access_allowed_cidr" {
+variable "in_access_allowed_cidrs" {
   description = ""
 }
 

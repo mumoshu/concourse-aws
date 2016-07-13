@@ -104,7 +104,7 @@ func InteractivelyCreateConfig() *concourse.Config {
 		subnetIds = append(subnetIds, subnetId)
 	}
 
-	accessibleCIDR := AskForRequiredInput("AccessibleCIDR", AskOptions{Default: fmt.Sprintf("%s/32", ObtainExternalIp())})
+	accessibleCIDRS := AskForRequiredInput("AccessibleCIDRS(commma separated)", AskOptions{Default: fmt.Sprintf("%s/32", ObtainExternalIp())})
 
 	dbInstanceClass := AskForRequiredInput("DB Instance Class", AskOptions{Default: "db.t2.micro"})
 	instanceType := AskForRequiredInput("Concourse Instance Type", AskOptions{Default: "t2.micro"})
@@ -115,7 +115,7 @@ func InteractivelyCreateConfig() *concourse.Config {
 	return &concourse.Config{
 		Region:            region,
 		KeyName:           keyName,
-		AccessibleCIDR:    accessibleCIDR,
+		AccessibleCIDRS:   accessibleCIDRS,
 		VpcId:             vpcId,
 		SubnetIds:         subnetIds,
 		AvailabilityZones: availabilityZones,
@@ -187,7 +187,7 @@ func TerraformRun(subcommand string, c *concourse.Config) {
 		"-var", "tsa_public_key=host_key.pub",
 		"-var", "tsa_worker_private_key=worker_key",
 		"-var", fmt.Sprintf("ami=%s", c.AMI),
-		"-var", fmt.Sprintf("in_access_allowed_cidr=%s", c.AccessibleCIDR),
+		"-var", fmt.Sprintf("in_access_allowed_cidrs=%s", c.AccessibleCIDRS),
 		"-var", fmt.Sprintf("worker_instance_profile=%s", c.WorkerInstanceProfile),
 		"-var", fmt.Sprintf("basic_auth_username=%s", c.BasicAuthUsername),
 		"-var", fmt.Sprintf("basic_auth_password=%s", c.BasicAuthPassword),

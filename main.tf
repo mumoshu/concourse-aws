@@ -224,12 +224,12 @@ resource "aws_security_group" "default" {
   description = "concourse ${var.prefix}default"
   vpc_id = "${var.vpc_id}"
 
-  # SSH access from a specific CIDR
+  # SSH access from a specific CIDRS
   ingress {
     from_port = 22
     to_port = 22
     protocol = "tcp"
-    cidr_blocks = ["${var.in_access_allowed_cidr}"]
+    cidr_blocks = [ "${split(",", var.in_access_allowed_cidrs)}" ]
   }
 
   # outbound internet access
@@ -250,12 +250,12 @@ resource "aws_security_group" "atc" {
   description = "concourse ${var.prefix}atc"
   vpc_id = "${var.vpc_id}"
 
-  # HTTP access from anywhere
+  # HTTP access from a specific CIDRS
   ingress {
     from_port = "${var.elb_listener_instance_port}"
     to_port = "${var.elb_listener_instance_port}"
     protocol = "tcp"
-    cidr_blocks = ["${var.in_access_allowed_cidr}"]
+    cidr_blocks = [ "${split(",", var.in_access_allowed_cidrs)}" ]
   }
 
   lifecycle {
@@ -345,11 +345,12 @@ resource "aws_security_group" "external_lb" {
 
   vpc_id = "${var.vpc_id}"
 
+  # HTTP access from a specific CIDRS
   ingress {
     from_port = "${var.elb_listener_lb_port}"
     to_port = "${var.elb_listener_lb_port}"
     protocol = "tcp"
-    cidr_blocks = ["${var.in_access_allowed_cidr}"]
+    cidr_blocks = [ "${split(",", var.in_access_allowed_cidrs)}" ]
   }
 
   ingress {
