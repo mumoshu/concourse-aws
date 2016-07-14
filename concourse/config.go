@@ -13,7 +13,7 @@ type Config struct {
 	SubnetIds             []string `yaml:"subnet_ids"`
 	VpcId                 string   `yaml:"vpc_id"`
 	AvailabilityZones     []string `yaml:"availability_zones"`
-	AccessibleCIDR        string   `yaml:"accessible_cidr"`
+	AccessibleCIDRS       string   `yaml:"accessible_cidrs"`
 	DBInstanceClass       string   `yaml:"db_instance_class"`
 	InstanceType          string   `yaml:"instance_type"`
 	WorkerInstanceProfile string   `yaml:"worker_instance_profile"`

@@ -17,13 +17,13 @@ key_name: cw_kuoka
 subnet_ids:
   - subnet-11111914
   - subnet-2222fc48
-accessible_cidr: 123.123.234.234/32
+accessible_cidrs: 123.123.234.234/32,234.234.234.234/32
 `,
 		expectedConfig: Config{
-			Region:         "ap-northeast-1",
-			KeyName:        "cw_kuoka",
-			SubnetIds:      []string{"subnet-11111914", "subnet-2222fc48"},
-			AccessibleCIDR: "123.123.234.234/32",
+			Region:          "ap-northeast-1",
+			KeyName:         "cw_kuoka",
+			SubnetIds:       []string{"subnet-11111914", "subnet-2222fc48"},
+			AccessibleCIDRS: "123.123.234.234/32,234.234.234.234/32",
 		},
 	},
 }
