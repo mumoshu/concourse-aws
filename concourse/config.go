@@ -8,18 +8,23 @@ import (
 )
 
 type Config struct {
-	Region                string
-	KeyName               string   `yaml:"key_name"`
-	SubnetIds             []string `yaml:"subnet_ids"`
-	VpcId                 string   `yaml:"vpc_id"`
-	AvailabilityZones     []string `yaml:"availability_zones"`
-	AccessibleCIDRS       string   `yaml:"accessible_cidrs"`
-	DBInstanceClass       string   `yaml:"db_instance_class"`
-	InstanceType          string   `yaml:"instance_type"`
-	WorkerInstanceProfile string   `yaml:"worker_instance_profile"`
-	AMI                   string   `yaml:"ami_id"`
-	BasicAuthUsername     string   `yaml:"basic_auth_username"`
-	BasicAuthPassword     string   `yaml:"basic_auth_password"`
+	Region                  string
+	KeyName                 string   `yaml:"key_name"`
+	SubnetIds               []string `yaml:"subnet_ids"`
+	VpcId                   string   `yaml:"vpc_id"`
+	AvailabilityZones       []string `yaml:"availability_zones"`
+	AccessibleCIDRS         string   `yaml:"accessible_cidrs"`
+	DBInstanceClass         string   `yaml:"db_instance_class"`
+	InstanceType            string   `yaml:"instance_type"`
+	WorkerInstanceProfile   string   `yaml:"worker_instance_profile"`
+	AMI                     string   `yaml:"ami_id"`
+	BasicAuthUsername       string   `yaml:"basic_auth_username"`
+	BasicAuthPassword       string   `yaml:"basic_auth_password"`
+	GithubAuthClientId      string   `yaml:"github_auth_client_id"`
+	GithubAuthClientSecret  string   `yaml:"github_auth_client_secret"`
+	GithubAuthOrganizations []string `yaml:"github_auth_organizations"`
+	GithubAuthTeams         []string `yaml:"github_auth_teams"`
+	GithubAuthUsers         []string `yaml:"github_auth_users"`
 }
 
 func ConfigFromFile(filename string) (*Config, error) {

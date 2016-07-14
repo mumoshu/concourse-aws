@@ -123,9 +123,29 @@ variable "worker_instance_profile" {
 }
 
 variable "basic_auth_username" {
-  default = "foo"
+  default = ""
 }
 
 variable "basic_auth_password" {
-  default = "bar"
+  default = ""
+}
+
+variable "github_auth_client_id" {
+  default = ""
+}
+
+variable "github_auth_client_secret" {
+  default = ""
+}
+
+variable "github_auth_organizations" {
+  default = ""
+}
+
+variable "github_auth_teams" {
+  default = ""
+}
+
+variable "github_auth_users" {
+  default = ""
 }
