@@ -20,6 +20,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 
 	"github.com/mumoshu/concourse-aws/concourse"
@@ -109,6 +110,29 @@ func InteractivelyCreateConfig() *concourse.Config {
 	dbInstanceClass := AskForRequiredInput("DB Instance Class", AskOptions{Default: "db.t2.micro"})
 	instanceType := AskForRequiredInput("Concourse Instance Type", AskOptions{Default: "t2.micro"})
 
+	possible_elb_protocols := []string{"http", "https"}
+	default_elb_ports := map[string]string{
+		"http":  "80",
+		"https": "443",
+	}
+	elb_protocol := AskForRequiredInput("Protocol for ELB", AskOptions{
+		Default:    possible_elb_protocols[0],
+		Candidates: possible_elb_protocols,
+		Validate:   mustBeIncludedIn(possible_elb_protocols),
+	})
+	elb_port, err := strconv.Atoi(AskForRequiredInput("Port for ELB", AskOptions{
+		Default: default_elb_ports[elb_protocol],
+	}))
+	if err != nil {
+		log.Fatal(err)
+		panic(err)
+	}
+	ssl_certificate_arn := ""
+	if elb_protocol == "https" {
+		ssl_certificate_arn = AskForRequiredInput("SSL ARN", AskOptions{Default: ""})
+	}
+	custom_external_domain_name := AskForRequiredInput("Custom External Domain Name(just hit enter for skip, e.g. some.cool.com)", AskOptions{Default: ""})
+
 	username := AskForRequiredInput("Basic Auth Username(just hit enter for skip)", AskOptions{Default: ""})
 	password := ""
 	if username != "" {
@@ -150,22 +174,26 @@ func InteractivelyCreateConfig() *concourse.Config {
 	}
 
 	return &concourse.Config{
-		Region:                  region,
-		KeyName:                 keyName,
-		AccessibleCIDRS:         accessibleCIDRS,
-		VpcId:                   vpcId,
-		SubnetIds:               subnetIds,
-		AvailabilityZones:       availabilityZones,
-		DBInstanceClass:         dbInstanceClass,
-		InstanceType:            instanceType,
-		AMI:                     amiId,
-		BasicAuthUsername:       username,
-		BasicAuthPassword:       password,
-		GithubAuthClientId:      ghclient_id,
-		GithubAuthClientSecret:  ghclient_secret,
-		GithubAuthOrganizations: ghorgs,
-		GithubAuthTeams:         ghteams,
-		GithubAuthUsers:         ghusers,
+		Region:                   region,
+		KeyName:                  keyName,
+		AccessibleCIDRS:          accessibleCIDRS,
+		VpcId:                    vpcId,
+		SubnetIds:                subnetIds,
+		AvailabilityZones:        availabilityZones,
+		DBInstanceClass:          dbInstanceClass,
+		InstanceType:             instanceType,
+		AMI:                      amiId,
+		ElbProtocol:              elb_protocol,
+		ElbPort:                  elb_port,
+		CustomExternalDomainName: custom_external_domain_name,
+		SSLCertificateArn:        ssl_certificate_arn,
+		BasicAuthUsername:        username,
+		BasicAuthPassword:        password,
+		GithubAuthClientId:       ghclient_id,
+		GithubAuthClientSecret:   ghclient_secret,
+		GithubAuthOrganizations:  ghorgs,
+		GithubAuthTeams:          ghteams,
+		GithubAuthUsers:          ghusers,
 	}
 }
 
@@ -211,6 +239,15 @@ func TerraformRun(subcommand string, c *concourse.Config) {
 		panic(err)
 	}
 
+	use_custom_external_domain_name := 0
+	if len(c.CustomExternalDomainName) > 0 {
+		use_custom_external_domain_name = 1
+	}
+	use_custom_elb_port := 0
+	if !(c.ElbPort == 80 || c.ElbPort == 443) {
+		use_custom_elb_port = 1
+	}
+
 	args := []string{
 		subcommand,
 		"-var", fmt.Sprintf("aws_region=%s", c.Region),
@@ -230,6 +267,12 @@ func TerraformRun(subcommand string, c *concourse.Config) {
 		"-var", "tsa_worker_private_key=worker_key",
 		"-var", fmt.Sprintf("ami=%s", c.AMI),
 		"-var", fmt.Sprintf("in_access_allowed_cidrs=%s", c.AccessibleCIDRS),
+		"-var", fmt.Sprintf("elb_listener_lb_protocol=%s", c.ElbProtocol),
+		"-var", fmt.Sprintf("elb_listener_lb_port=%d", c.ElbPort),
+		"-var", fmt.Sprintf("use_custom_elb_port=%d", use_custom_elb_port),
+		"-var", fmt.Sprintf("ssl_certificate_arn=%s", c.SSLCertificateArn),
+		"-var", fmt.Sprintf("use_custom_external_domain_name=%d", use_custom_external_domain_name),
+		"-var", fmt.Sprintf("custom_external_domain_name=%s", c.CustomExternalDomainName),
 		"-var", fmt.Sprintf("worker_instance_profile=%s", c.WorkerInstanceProfile),
 		"-var", fmt.Sprintf("basic_auth_username=%s", c.BasicAuthUsername),
 		"-var", fmt.Sprintf("basic_auth_password=%s", c.BasicAuthPassword),

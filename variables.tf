@@ -60,6 +60,14 @@ variable "elb_listener_lb_port" {
   default = "80"
 }
 
+variable "use_custom_elb_port" {
+  default = 0
+}
+
+variable "elb_listener_lb_protocol" {
+  default = "http"
+}
+
 variable "elb_listener_instance_port" {
   description = ""
   default = "8080"
@@ -147,5 +155,18 @@ variable "github_auth_teams" {
 }
 
 variable "github_auth_users" {
+  default = ""
+}
+
+variable "custom_external_domain_name" {
+  default = ""
+  description ="don't include http[s]://"
+}
+
+variable "use_custom_external_domain_name" {
+  default = 0
+}
+
+variable "ssl_certificate_arn" {
   default = ""
 }
