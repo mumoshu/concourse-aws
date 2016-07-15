@@ -253,14 +253,6 @@ resource "aws_security_group" "atc" {
   description = "concourse ${var.prefix}atc"
   vpc_id = "${var.vpc_id}"
 
-  # HTTP access from a specific CIDRS
-#  ingress {
-#    from_port = "${var.elb_listener_instance_port}"
-#    to_port = "${var.elb_listener_instance_port}"
-#    protocol = "tcp"
-#    cidr_blocks = [ "${split(",", var.in_access_allowed_cidrs)}" ]
-#  }
-
   lifecycle {
     create_before_destroy = true
   }
