@@ -20,6 +20,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 
 	"github.com/mumoshu/concourse-aws/concourse"
@@ -109,36 +110,59 @@ func InteractivelyCreateConfig() *concourse.Config {
 	dbInstanceClass := AskForRequiredInput("DB Instance Class", AskOptions{Default: "db.t2.micro"})
 	instanceType := AskForRequiredInput("Concourse Instance Type", AskOptions{Default: "t2.micro"})
 
+	possibleElbProtocols := []string{"http", "https"}
+	defaultElbPorts := map[string]string{
+		"http":  "80",
+		"https": "443",
+	}
+	elbProtocol := AskForRequiredInput("Protocol for ELB", AskOptions{
+		Default:    possibleElbProtocols[0],
+		Candidates: possibleElbProtocols,
+		Validate:   mustBeIncludedIn(possibleElbProtocols),
+	})
+	elbPort, err := strconv.Atoi(AskForRequiredInput("Port for ELB", AskOptions{
+		Default: defaultElbPorts[elbProtocol],
+	}))
+	if err != nil {
+		log.Fatal(err)
+		panic(err)
+	}
+	sslCertificateArn := ""
+	if elbProtocol == "https" {
+		sslCertificateArn = AskForRequiredInput("SSL ARN", AskOptions{Default: ""})
+	}
+	customExternalDomainName := AskForRequiredInput("Custom External Domain Name(just hit enter for skip, e.g. some.cool.com)", AskOptions{Default: ""})
+
 	username := AskForRequiredInput("Basic Auth Username(just hit enter for skip)", AskOptions{Default: ""})
 	password := ""
 	if username != "" {
 		password = AskForRequiredInput("Basic Auth Password", AskOptions{Default: "bar"})
 	}
 
-	ghclient_id := AskForRequiredInput("Github Auth Client Id(just hit enter for skip)", AskOptions{Default: ""})
-	ghclient_secret := ""
-	ghorgs := []string{}
-	ghteams := []string{}
-	ghusers := []string{}
-	if ghclient_id != "" {
-		ghclient_secret = AskForRequiredInput("Github Auth Client Secret(just hit enter for skip)", AskOptions{Default: ""})
-		ghorgs_input := AskForRequiredInput("Github Auth Organizations(comma separated)", AskOptions{Default: ""})
-		if ghorgs_input != "" {
-			ghorgs = strings.Split(ghorgs_input, ",")
+	ghClientId := AskForRequiredInput("Github Auth Client Id(just hit enter for skip)", AskOptions{Default: ""})
+	ghClientSecret := ""
+	ghOrgs := []string{}
+	ghTeams := []string{}
+	ghUsers := []string{}
+	if ghClientId != "" {
+		ghClientSecret = AskForRequiredInput("Github Auth Client Secret(just hit enter for skip)", AskOptions{Default: ""})
+		ghOrgsInput := AskForRequiredInput("Github Auth Organizations(comma separated)", AskOptions{Default: ""})
+		if ghOrgsInput != "" {
+			ghOrgs = strings.Split(ghOrgsInput, ",")
 		}
 
-		ghteams_input := AskForRequiredInput("Github Auth Teams(comma separated, e.g. ORG/TEAM)", AskOptions{Default: ""})
-		if ghteams_input != "" {
-			ghteams = strings.Split(ghteams_input, ",")
+		ghTeamsInput := AskForRequiredInput("Github Auth Teams(comma separated, e.g. ORG/TEAM)", AskOptions{Default: ""})
+		if ghTeamsInput != "" {
+			ghTeams = strings.Split(ghTeamsInput, ",")
 		}
 
-		ghusers_input := AskForRequiredInput("Github Auth Users(comma separated)", AskOptions{Default: ""})
-		if ghusers_input != "" {
-			ghusers = strings.Split(ghusers_input, ",")
+		ghUsersInput := AskForRequiredInput("Github Auth Users(comma separated)", AskOptions{Default: ""})
+		if ghUsersInput != "" {
+			ghUsers = strings.Split(ghUsersInput, ",")
 		}
 	}
 
-	if username == "" && ghclient_id == "" {
+	if username == "" && ghClientId == "" {
 		fmt.Println("WARNING WARNING WARNING WARNING WARNING")
 		fmt.Println("!!!  No Authentication configured   !!!")
 		fmt.Println("WARNING WARNING WARNING WARNING WARNING")
@@ -150,22 +174,26 @@ func InteractivelyCreateConfig() *concourse.Config {
 	}
 
 	return &concourse.Config{
-		Region:                  region,
-		KeyName:                 keyName,
-		AccessibleCIDRS:         accessibleCIDRS,
-		VpcId:                   vpcId,
-		SubnetIds:               subnetIds,
-		AvailabilityZones:       availabilityZones,
-		DBInstanceClass:         dbInstanceClass,
-		InstanceType:            instanceType,
-		AMI:                     amiId,
-		BasicAuthUsername:       username,
-		BasicAuthPassword:       password,
-		GithubAuthClientId:      ghclient_id,
-		GithubAuthClientSecret:  ghclient_secret,
-		GithubAuthOrganizations: ghorgs,
-		GithubAuthTeams:         ghteams,
-		GithubAuthUsers:         ghusers,
+		Region:                   region,
+		KeyName:                  keyName,
+		AccessibleCIDRS:          accessibleCIDRS,
+		VpcId:                    vpcId,
+		SubnetIds:                subnetIds,
+		AvailabilityZones:        availabilityZones,
+		DBInstanceClass:          dbInstanceClass,
+		InstanceType:             instanceType,
+		AMI:                      amiId,
+		ElbProtocol:              elbProtocol,
+		ElbPort:                  elbPort,
+		CustomExternalDomainName: customExternalDomainName,
+		SSLCertificateArn:        sslCertificateArn,
+		BasicAuthUsername:        username,
+		BasicAuthPassword:        password,
+		GithubAuthClientId:       ghClientId,
+		GithubAuthClientSecret:   ghClientSecret,
+		GithubAuthOrganizations:  ghOrgs,
+		GithubAuthTeams:          ghTeams,
+		GithubAuthUsers:          ghUsers,
 	}
 }
 
@@ -211,6 +239,15 @@ func TerraformRun(subcommand string, c *concourse.Config) {
 		panic(err)
 	}
 
+	useCustomExternalDomainName := 0
+	if len(c.CustomExternalDomainName) > 0 {
+		useCustomExternalDomainName = 1
+	}
+	useCustomElbPort := 0
+	if !(c.ElbPort == 80 || c.ElbPort == 443) {
+		useCustomElbPort = 1
+	}
+
 	args := []string{
 		subcommand,
 		"-var", fmt.Sprintf("aws_region=%s", c.Region),
@@ -230,6 +267,12 @@ func TerraformRun(subcommand string, c *concourse.Config) {
 		"-var", "tsa_worker_private_key=worker_key",
 		"-var", fmt.Sprintf("ami=%s", c.AMI),
 		"-var", fmt.Sprintf("in_access_allowed_cidrs=%s", c.AccessibleCIDRS),
+		"-var", fmt.Sprintf("elb_listener_lb_protocol=%s", c.ElbProtocol),
+		"-var", fmt.Sprintf("elb_listener_lb_port=%d", c.ElbPort),
+		"-var", fmt.Sprintf("use_custom_elb_port=%d", useCustomElbPort),
+		"-var", fmt.Sprintf("ssl_certificate_arn=%s", c.SSLCertificateArn),
+		"-var", fmt.Sprintf("use_custom_external_domain_name=%d", useCustomExternalDomainName),
+		"-var", fmt.Sprintf("custom_external_domain_name=%s", c.CustomExternalDomainName),
 		"-var", fmt.Sprintf("worker_instance_profile=%s", c.WorkerInstanceProfile),
 		"-var", fmt.Sprintf("basic_auth_username=%s", c.BasicAuthUsername),
 		"-var", fmt.Sprintf("basic_auth_password=%s", c.BasicAuthPassword),

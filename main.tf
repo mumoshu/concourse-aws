@@ -39,11 +39,10 @@ resource "aws_elb" "web-elb" {
 
   listener {
     instance_port = "${var.elb_listener_instance_port}"
-    # for intercept to function, make sure your load balancer is configured to do TCP or SSL forwarding, not HTTP or HTTPS.
-    # ref. https://concourse.ci/architecture.html
-    instance_protocol = "tcp"
+    instance_protocol = "http"
     lb_port = "${var.elb_listener_lb_port}"
-    lb_protocol = "tcp"
+    lb_protocol = "${var.elb_listener_lb_protocol}"
+    ssl_certificate_id = "${var.ssl_certificate_arn}"
   }
 
   listener {
@@ -60,7 +59,6 @@ resource "aws_elb" "web-elb" {
     target = "TCP:${var.elb_listener_instance_port}"
     interval = 30
   }
-
 }
 
 resource "aws_autoscaling_group" "web-asg" {
@@ -163,7 +161,7 @@ resource "template_file" "start_concourse_web" {
     tsa_host_key = "${file("${path.module}/${var.tsa_host_key}")}"
     tsa_authorized_keys = "${file("${path.module}/${var.tsa_authorized_keys}")}"
     postgres_data_source = "postgres://${var.db_username}:${var.db_password}@${aws_db_instance.default.endpoint}/concourse"
-    external_url = "http://${aws_elb.web-elb.dns_name}"
+    external_url = "${var.elb_listener_lb_protocol}://${element(split(",","${aws_elb.web-elb.dns_name},${var.custom_external_domain_name}"), var.use_custom_external_domain_name)}${element(split(",",",:${var.elb_listener_lb_port}"), var.use_custom_elb_port)}"
     basic_auth_username = "${var.basic_auth_username}"
     basic_auth_password = "${var.basic_auth_password}"
     github_auth_client_id = "${var.github_auth_client_id}"
@@ -254,14 +252,6 @@ resource "aws_security_group" "atc" {
   name_prefix = "${var.prefix}atc"
   description = "concourse ${var.prefix}atc"
   vpc_id = "${var.vpc_id}"
-
-  # HTTP access from a specific CIDRS
-  ingress {
-    from_port = "${var.elb_listener_instance_port}"
-    to_port = "${var.elb_listener_instance_port}"
-    protocol = "tcp"
-    cidr_blocks = [ "${split(",", var.in_access_allowed_cidrs)}" ]
-  }
 
   lifecycle {
     create_before_destroy = true
