@@ -47,8 +47,7 @@ var putStatesToS3 = &cobra.Command{
 	Use:   "put-states-to-s3",
 	Short: "Put state files to S3",
 	Long: `Put state files below to specified S3
-
-	- ` + strings.Join(assetFileNames[:], ","),
+  - ` + strings.Join(assetFileNames[:], ", "),
 	Run: RunPutStatesToS3,
 }
 
@@ -57,8 +56,7 @@ var getStatesFromS3 = &cobra.Command{
 	Use:   "get-states-from-s3",
 	Short: "Get state files from S3",
 	Long: `Get state files below from specified S3
-
-	- ` + strings.Join(assetFileNames[:], ","),
+  - ` + strings.Join(assetFileNames[:], ", "),
 	Run: RunGetStatesFromS3,
 }
 
