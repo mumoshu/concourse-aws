@@ -42,25 +42,23 @@ var assetFileNames = []string{
 	"authorized_worker_keys",
 }
 
-// putStatesToS3 represents the up command
-var putStatesToS3 = &cobra.Command{
-	Use:   "put-states-to-s3",
-	Short: "Put state files to S3",
-	Long: `Put state files below to specified S3
+var save = &cobra.Command{
+	Use:   "save",
+	Short: "Save state files to S3",
+	Long: `Put state files below to specified S3.  Keys to be stored in specified bucket are the same with filenames.
   - ` + strings.Join(assetFileNames[:], ", "),
-	Run: RunPutStatesToS3,
+	Run: RunSave,
 }
 
-// getStatesFromS3 represents the up command
-var getStatesFromS3 = &cobra.Command{
-	Use:   "get-states-from-s3",
-	Short: "Get state files from S3",
-	Long: `Get state files below from specified S3
+var restore = &cobra.Command{
+	Use:   "restore",
+	Short: "Restore state files from S3",
+	Long: `Restore state files below from specified S3. Keys pulled from specified bucket are the same with filenames.
   - ` + strings.Join(assetFileNames[:], ", "),
-	Run: RunGetStatesFromS3,
+	Run: RunRestore,
 }
 
-func RunPutStatesToS3(cmd *cobra.Command, args []string) {
+func RunSave(cmd *cobra.Command, args []string) {
 	if len(bucketName) < 1 || len(bucketRegion) < 1 {
 		log.Panic("--bucket and --bucket-region are required.")
 	}
@@ -68,7 +66,7 @@ func RunPutStatesToS3(cmd *cobra.Command, args []string) {
 	PutFilesToS3(bucketRegion, bucketName, cfgDir, assetFileNames)
 }
 
-func RunGetStatesFromS3(cmd *cobra.Command, args []string) {
+func RunRestore(cmd *cobra.Command, args []string) {
 	if len(bucketName) < 1 {
 		log.Panic("--bucket is required.")
 	}
@@ -79,11 +77,11 @@ func RunGetStatesFromS3(cmd *cobra.Command, args []string) {
 }
 
 func init() {
-	RootCmd.AddCommand(putStatesToS3)
-	putStatesToS3.Flags().StringVar(&bucketName, "bucket", "", "S3 bucket name to which assets will be uploaded.")
-	putStatesToS3.Flags().StringVar(&bucketRegion, "bucket-region", "", "Region of S3 Bucket specified by --bucket")
+	RootCmd.AddCommand(restore)
+	restore.Flags().StringVar(&bucketName, "bucket", "", "S3 bucket name to which assets will be uploaded.")
+	restore.Flags().StringVar(&bucketRegion, "bucket-region", "", "Region of S3 Bucket specified by --bucket")
 
-	RootCmd.AddCommand(getStatesFromS3)
-	getStatesFromS3.Flags().StringVar(&bucketName, "bucket", "", "S3 bucket name to which assets will be uploaded.")
-	getStatesFromS3.Flags().StringVar(&bucketRegion, "bucket-region", "", "Region of S3 Bucket specified by --bucket")
+	RootCmd.AddCommand(save)
+	save.Flags().StringVar(&bucketName, "bucket", "", "S3 bucket name to which assets will be uploaded.")
+	save.Flags().StringVar(&bucketRegion, "bucket-region", "", "Region of S3 Bucket specified by --bucket")
 }
