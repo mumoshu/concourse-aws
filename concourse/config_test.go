@@ -12,6 +12,7 @@ var validConfigs = []struct {
 	{
 		providedYaml: `
 ---
+prefix: sample
 region: ap-northeast-1
 key_name: cw_kuoka
 subnet_ids:
@@ -29,6 +30,7 @@ custom_external_domain_name: "some.where"
 ssl_certificate_arn: "arn://dummydummy"
 `,
 		expectedConfig: Config{
+			Prefix:                   "sample",
 			Region:                   "ap-northeast-1",
 			KeyName:                  "cw_kuoka",
 			SubnetIds:                []string{"subnet-11111914", "subnet-2222fc48"},

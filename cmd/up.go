@@ -69,6 +69,8 @@ func mustBeIncludedIn(candidates []string) func(string) error {
 }
 
 func InteractivelyCreateConfig() *concourse.Config {
+	prefix := AskForRequiredInput("Prefix", AskOptions{Default: "concourse-"})
+
 	regions := ListRegions()
 	region := AskForRequiredInput("Region", AskOptions{Candidates: regions, Validate: mustBeIncludedIn(regions), Default: "ap-northeast-1"})
 
@@ -174,6 +176,7 @@ func InteractivelyCreateConfig() *concourse.Config {
 	}
 
 	return &concourse.Config{
+		Prefix:                   prefix,
 		Region:                   region,
 		KeyName:                  keyName,
 		AccessibleCIDRS:          accessibleCIDRS,
@@ -278,6 +281,11 @@ func TerraformRun(subcommand string, c *concourse.Config) {
 		"-var", fmt.Sprintf("basic_auth_password=%s", c.BasicAuthPassword),
 		"-var", fmt.Sprintf("github_auth_client_id=%s", c.GithubAuthClientId),
 		"-var", fmt.Sprintf("github_auth_client_secret=%s", c.GithubAuthClientSecret),
+	}
+	if len(c.Prefix) > 0 {
+		args = append(args,
+			"-var", fmt.Sprintf("prefix=%s", c.Prefix),
+		)
 	}
 	if len(c.GithubAuthOrganizations) > 0 {
 		args = append(args,
