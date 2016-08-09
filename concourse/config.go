@@ -8,7 +8,8 @@ import (
 )
 
 type Config struct {
-	Region                   string
+	Prefix                   string   `yaml:"prefix"`
+	Region                   string   `yaml:"region"`
 	KeyName                  string   `yaml:"key_name"`
 	SubnetIds                []string `yaml:"subnet_ids"`
 	VpcId                    string   `yaml:"vpc_id"`
@@ -18,6 +19,10 @@ type Config struct {
 	InstanceType             string   `yaml:"instance_type"`
 	WorkerInstanceProfile    string   `yaml:"worker_instance_profile"`
 	AMI                      string   `yaml:"ami_id"`
+	AsgMin                   string   `yaml:"asg_min"`
+	AsgMax                   string   `yaml:"asg_max"`
+	WebAsgDesired            string   `yaml:"web_asg_desired"`
+	WorkerAsgDesired         string   `yaml:"worker_asg_desired"`
 	ElbProtocol              string   `yaml:"elb_protocol"`
 	ElbPort                  int      `yaml:"elb_port"`
 	CustomExternalDomainName string   `yaml:"custom_external_domain_name"`

@@ -69,6 +69,8 @@ func mustBeIncludedIn(candidates []string) func(string) error {
 }
 
 func InteractivelyCreateConfig() *concourse.Config {
+	prefix := AskForRequiredInput("Prefix", AskOptions{Default: "concourse-"})
+
 	regions := ListRegions()
 	region := AskForRequiredInput("Region", AskOptions{Candidates: regions, Validate: mustBeIncludedIn(regions), Default: "ap-northeast-1"})
 
@@ -109,6 +111,11 @@ func InteractivelyCreateConfig() *concourse.Config {
 
 	dbInstanceClass := AskForRequiredInput("DB Instance Class", AskOptions{Default: "db.t2.micro"})
 	instanceType := AskForRequiredInput("Concourse Instance Type", AskOptions{Default: "t2.micro"})
+
+	asgMin := AskForRequiredInput("Min numbers of servers in ASG(Web, Worker)", AskOptions{Default: "0"})
+	asgMax := AskForRequiredInput("Max numbers of servers in ASG(Web, Worker)", AskOptions{Default: "2"})
+	webAsgDesired := AskForRequiredInput("Desired numbers of web servers in ASG", AskOptions{Default: "1"})
+	workerAsgDesired := AskForRequiredInput("Desired numbers of servers in ASG", AskOptions{Default: "2"})
 
 	possibleElbProtocols := []string{"http", "https"}
 	defaultElbPorts := map[string]string{
@@ -174,6 +181,7 @@ func InteractivelyCreateConfig() *concourse.Config {
 	}
 
 	return &concourse.Config{
+		Prefix:                   prefix,
 		Region:                   region,
 		KeyName:                  keyName,
 		AccessibleCIDRS:          accessibleCIDRS,
@@ -183,6 +191,10 @@ func InteractivelyCreateConfig() *concourse.Config {
 		DBInstanceClass:          dbInstanceClass,
 		InstanceType:             instanceType,
 		AMI:                      amiId,
+		AsgMin:                   asgMin,
+		AsgMax:                   asgMax,
+		WebAsgDesired:            webAsgDesired,
+		WorkerAsgDesired:         workerAsgDesired,
 		ElbProtocol:              elbProtocol,
 		ElbPort:                  elbPort,
 		CustomExternalDomainName: customExternalDomainName,
@@ -279,6 +291,34 @@ func TerraformRun(subcommand string, c *concourse.Config) {
 		"-var", fmt.Sprintf("github_auth_client_id=%s", c.GithubAuthClientId),
 		"-var", fmt.Sprintf("github_auth_client_secret=%s", c.GithubAuthClientSecret),
 	}
+
+	if len(c.Prefix) > 0 {
+		args = append(args,
+			"-var", fmt.Sprintf("prefix=%s", c.Prefix),
+		)
+	}
+
+	if len(c.AsgMin) > 0 {
+		args = append(args,
+			"-var", fmt.Sprintf("asg_min=%s", c.AsgMin),
+		)
+	}
+	if len(c.AsgMax) > 0 {
+		args = append(args,
+			"-var", fmt.Sprintf("asg_max=%s", c.AsgMax),
+		)
+	}
+	if len(c.WebAsgDesired) > 0 {
+		args = append(args,
+			"-var", fmt.Sprintf("web_asg_desired=%s", c.WebAsgDesired),
+		)
+	}
+	if len(c.WorkerAsgDesired) > 0 {
+		args = append(args,
+			"-var", fmt.Sprintf("worker_asg_desired=%s", c.WorkerAsgDesired),
+		)
+	}
+
 	if len(c.GithubAuthOrganizations) > 0 {
 		args = append(args,
 			"-var", fmt.Sprintf("github_auth_organizations=%s", strings.Join(c.GithubAuthOrganizations, ",")),
