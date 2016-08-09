@@ -19,6 +19,10 @@ subnet_ids:
   - subnet-11111914
   - subnet-2222fc48
 accessible_cidrs: 123.123.234.234/32,234.234.234.234/32
+asg_min: 0
+asg_max: 2
+web_asg_desired: 1
+worker_asg_desired: 2
 github_auth_client_id: dummydummy
 github_auth_client_secret: dummydummydummy
 github_auth_organizations: [org1, org2]
@@ -35,6 +39,10 @@ ssl_certificate_arn: "arn://dummydummy"
 			KeyName:                  "cw_kuoka",
 			SubnetIds:                []string{"subnet-11111914", "subnet-2222fc48"},
 			AccessibleCIDRS:          "123.123.234.234/32,234.234.234.234/32",
+			AsgMin:                   "0",
+			AsgMax:                   "2",
+			WebAsgDesired:            "1",
+			WorkerAsgDesired:         "2",
 			ElbProtocol:              "https",
 			ElbPort:                  443,
 			CustomExternalDomainName: "some.where",
