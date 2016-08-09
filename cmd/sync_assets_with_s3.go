@@ -66,14 +66,18 @@ func RunPutStatesToS3(cmd *cobra.Command, args []string) {
 	if len(bucketName) < 1 || len(bucketRegion) < 1 {
 		log.Panic("--bucket and --bucket-region are required.")
 	}
-	PutFilesToS3(bucketRegion, bucketName, "./", assetFileNames)
+
+	PutFilesToS3(bucketRegion, bucketName, cfgDir, assetFileNames)
 }
 
 func RunGetStatesFromS3(cmd *cobra.Command, args []string) {
 	if len(bucketName) < 1 {
 		log.Panic("--bucket is required.")
 	}
-	GetFilesFromS3(bucketRegion, bucketName, "./", assetFileNames)
+
+	makeCfgDirIfNotExists()
+
+	GetFilesFromS3(bucketRegion, bucketName, cfgDir, assetFileNames)
 }
 
 func init() {

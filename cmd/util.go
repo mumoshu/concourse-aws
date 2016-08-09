@@ -176,3 +176,17 @@ func GetFilesFromS3(region string, bucketName string, path string, filenames []s
 		log.Println("Downloaded file: ", file.Name(), " (", numBytes, "bytes)")
 	}
 }
+
+func completeCfgDir(filename string) string {
+	return fmt.Sprintf("%s%s", cfgDir, filename)
+}
+
+func makeCfgDirIfNotExists() {
+	if _, err := os.Stat(cfgDir); os.IsNotExist(err) {
+		// permission should be 0700
+		// becuat the config dir contains ssh keys.
+		if err := os.Mkdir(cfgDir, 0777); err != nil {
+			log.Panic(err)
+		}
+	}
+}
