@@ -177,7 +177,7 @@ func GetFilesFromS3(region string, bucketName string, path string, filenames []s
 	}
 }
 
-func completeCfgDir(filename string) string {
+func prefixConfigDir(filename string) string {
 	return fmt.Sprintf("%s%s", cfgDir, filename)
 }
 

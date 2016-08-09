@@ -37,11 +37,11 @@ var upCmd = &cobra.Command{
 }
 
 func Run(cmd *cobra.Command, args []string) {
-	c, err := concourse.ConfigFromFile(completeCfgDir("cluster.yml"))
+	c, err := concourse.ConfigFromFile(prefixConfigDir("cluster.yml"))
 	if err != nil && os.IsNotExist(err) {
 		fmt.Printf("Creating cluster.yml")
 		c = InteractivelyCreateConfig()
-		WriteConfigFile(c, completeCfgDir("cluster.yml"))
+		WriteConfigFile(c, prefixConfigDir("cluster.yml"))
 	}
 	//	fmt.Printf("config:%+v", c)
 	TerraformRun("plan", c)
@@ -237,12 +237,12 @@ func SSHGenKeyIfNotExist(keyFileName string) {
 
 func TerraformRun(subcommand string, c *concourse.Config) {
 	// auto ssh key creation
-	SSHGenKeyIfNotExist(completeCfgDir("host_key"))
-	SSHGenKeyIfNotExist(completeCfgDir("worker_key"))
-	SSHGenKeyIfNotExist(completeCfgDir("session_signing_key"))
+	SSHGenKeyIfNotExist(prefixConfigDir("host_key"))
+	SSHGenKeyIfNotExist(prefixConfigDir("worker_key"))
+	SSHGenKeyIfNotExist(prefixConfigDir("session_signing_key"))
 	cp := exec.Command("cp",
-		completeCfgDir("worker_key.pub"),
-		completeCfgDir("authorized_worker_keys"))
+		prefixConfigDir("worker_key.pub"),
+		prefixConfigDir("authorized_worker_keys"))
 	cp.Stdout = os.Stdout
 	cp.Stderr = os.Stderr
 	if err := cp.Run(); err != nil {
