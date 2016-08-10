@@ -31,22 +31,17 @@ import (
 // upCmd represents the up command
 var upCmd = &cobra.Command{
 	Use:   "up",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: Run,
+	Short: "Spin up or Update concourse on aws",
+	Long:  `This spins up scalable concourse ci servers interactively.  This command supports to update(implemented by terraform update) states of concourse ci servrers.`,
+	Run:   Run,
 }
 
 func Run(cmd *cobra.Command, args []string) {
-	c, err := concourse.ConfigFromFile("cluster.yml")
+	c, err := concourse.ConfigFromFile(prefixConfigDir("cluster.yml"))
 	if err != nil && os.IsNotExist(err) {
 		fmt.Printf("Creating cluster.yml")
 		c = InteractivelyCreateConfig()
-		WriteConfigFile(c, "cluster.yml")
+		WriteConfigFile(c, prefixConfigDir("cluster.yml"))
 	}
 	//	fmt.Printf("config:%+v", c)
 	TerraformRun("plan", c)
@@ -215,6 +210,8 @@ func WriteConfigFile(config *concourse.Config, path string) {
 		panic(err)
 	}
 
+	makeCfgDirIfNotExists()
+
 	if ioutil.WriteFile(path, []byte(d), 0644) != nil {
 		panic(err)
 	}
@@ -240,10 +237,12 @@ func SSHGenKeyIfNotExist(keyFileName string) {
 
 func TerraformRun(subcommand string, c *concourse.Config) {
 	// auto ssh key creation
-	SSHGenKeyIfNotExist("host_key")
-	SSHGenKeyIfNotExist("worker_key")
-	SSHGenKeyIfNotExist("session_signing_key")
-	cp := exec.Command("cp", "worker_key.pub", "authorized_worker_keys")
+	SSHGenKeyIfNotExist(prefixConfigDir("host_key"))
+	SSHGenKeyIfNotExist(prefixConfigDir("worker_key"))
+	SSHGenKeyIfNotExist(prefixConfigDir("session_signing_key"))
+	cp := exec.Command("cp",
+		prefixConfigDir("worker_key.pub"),
+		prefixConfigDir("authorized_worker_keys"))
 	cp.Stdout = os.Stdout
 	cp.Stderr = os.Stderr
 	if err := cp.Run(); err != nil {
@@ -262,6 +261,7 @@ func TerraformRun(subcommand string, c *concourse.Config) {
 
 	args := []string{
 		subcommand,
+		"-state", fmt.Sprintf("%s%s", cfgDir, "terraform.tfstate"),
 		"-var", fmt.Sprintf("aws_region=%s", c.Region),
 		"-var", fmt.Sprintf("availability_zones=%s", strings.Join(c.AvailabilityZones, ",")),
 		"-var", fmt.Sprintf("key_name=%s", c.KeyName),
@@ -272,11 +272,11 @@ func TerraformRun(subcommand string, c *concourse.Config) {
 		"-var", "db_username=concourse",
 		"-var", "db_password=concourse",
 		"-var", fmt.Sprintf("db_subnet_ids=%s", strings.Join(c.SubnetIds, ",")),
-		"-var", "tsa_host_key=host_key",
-		"-var", "session_signing_key=session_signing_key",
-		"-var", "tsa_authorized_keys=worker_key.pub",
-		"-var", "tsa_public_key=host_key.pub",
-		"-var", "tsa_worker_private_key=worker_key",
+		"-var", fmt.Sprintf("tsa_host_key=%s", prefixConfigDir("host_key")),
+		"-var", fmt.Sprintf("session_signing_key=%s", prefixConfigDir("session_signing_key")),
+		"-var", fmt.Sprintf("tsa_authorized_keys=%s", prefixConfigDir("worker_key.pub")),
+		"-var", fmt.Sprintf("tsa_public_key=%s", prefixConfigDir("host_key.pub")),
+		"-var", fmt.Sprintf("tsa_worker_private_key=%s", prefixConfigDir("worker_key")),
 		"-var", fmt.Sprintf("ami=%s", c.AMI),
 		"-var", fmt.Sprintf("in_access_allowed_cidrs=%s", c.AccessibleCIDRS),
 		"-var", fmt.Sprintf("elb_listener_lb_protocol=%s", c.ElbProtocol),

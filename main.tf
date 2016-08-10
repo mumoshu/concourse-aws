@@ -157,9 +157,9 @@ resource "template_file" "start_concourse_web" {
   template = "${file("${path.module}/01_start_concourse_web.sh.tpl")}"
 
   vars {
-    session_signing_key = "${file("${path.module}/${var.session_signing_key}")}"
-    tsa_host_key = "${file("${path.module}/${var.tsa_host_key}")}"
-    tsa_authorized_keys = "${file("${path.module}/${var.tsa_authorized_keys}")}"
+    session_signing_key = "${file("${var.session_signing_key}")}"
+    tsa_host_key = "${file("${var.tsa_host_key}")}"
+    tsa_authorized_keys = "${file("${var.tsa_authorized_keys}")}"
     postgres_data_source = "postgres://${var.db_username}:${var.db_password}@${aws_db_instance.default.endpoint}/concourse"
     external_url = "${var.elb_listener_lb_protocol}://${element(split(",","${aws_elb.web-elb.dns_name},${var.custom_external_domain_name}"), var.use_custom_external_domain_name)}${element(split(",",",:${var.elb_listener_lb_port}"), var.use_custom_elb_port)}"
     basic_auth_username = "${var.basic_auth_username}"
@@ -177,8 +177,8 @@ resource "template_file" "start_concourse_worker" {
 
   vars {
     tsa_host = "${aws_elb.web-elb.dns_name}"
-    tsa_public_key = "${file("${path.module}/${var.tsa_public_key}")}"
-    tsa_worker_private_key = "${file("${path.module}/${var.tsa_worker_private_key}")}"
+    tsa_public_key = "${file("${var.tsa_public_key}")}"
+    tsa_worker_private_key = "${file("${var.tsa_worker_private_key}")}"
   }
 }
 

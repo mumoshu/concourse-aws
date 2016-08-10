@@ -2,10 +2,15 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awsutil"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
 func ListRegions() []string {
@@ -123,4 +128,65 @@ func ListSubnets(region string, vpcId string, az string) []string {
 
 	return subnets
 
+}
+
+func PutFilesToS3(region string, bucketName string, path string, filenames []string) {
+	svc := s3.New(session.New(), &aws.Config{Region: aws.String(region)})
+
+	for _, filename := range filenames {
+		file, err := os.Open(fmt.Sprintf("%s%s", path, filename))
+		if err != nil {
+			log.Panic(err.Error())
+		}
+		defer file.Close()
+
+		resp, err := svc.PutObject(&s3.PutObjectInput{
+			Bucket: aws.String(bucketName),
+			Key:    aws.String(filename),
+			Body:   file,
+		})
+
+		if err != nil {
+			log.Panic(err.Error())
+		}
+
+		log.Println(awsutil.StringValue(resp))
+	}
+}
+
+func GetFilesFromS3(region string, bucketName string, path string, filenames []string) {
+	downloader := s3manager.NewDownloader(session.New(&aws.Config{Region: aws.String(region)}))
+
+	for _, filename := range filenames {
+		file, err := os.Create(fmt.Sprintf("%s%s", path, filename))
+		if err != nil {
+			log.Panic("Failed to create file", err)
+		}
+		defer file.Close()
+
+		numBytes, err := downloader.Download(file, &s3.GetObjectInput{
+			Bucket: aws.String(bucketName),
+			Key:    aws.String(filename),
+		})
+
+		if err != nil {
+			log.Panic(err.Error())
+		}
+
+		log.Println("Downloaded file: ", file.Name(), " (", numBytes, "bytes)")
+	}
+}
+
+func prefixConfigDir(filename string) string {
+	return fmt.Sprintf("%s%s", cfgDir, filename)
+}
+
+func makeCfgDirIfNotExists() {
+	if _, err := os.Stat(cfgDir); os.IsNotExist(err) {
+		// permission should be 0700
+		// becuat the config dir contains ssh keys.
+		if err := os.Mkdir(cfgDir, 0777); err != nil {
+			log.Panic(err)
+		}
+	}
 }
