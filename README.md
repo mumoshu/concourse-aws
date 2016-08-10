@@ -1,4 +1,4 @@
-### Auto-scaling Concourse CI v1.2 on AWS with Terraform
+### Auto-scaling Concourse CI on AWS with Terraform
 
 http://www.slideshare.net/mumoshu/autoscaled-concourse-ci-on-aws-wo-bosh
 
