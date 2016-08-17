@@ -20,19 +20,47 @@ curl http://169.254.169.254/latest/meta-data/local-ipv4 > $CONCOURSE_PATH/peer_i
 if [ "z${basic_auth_username}" != "z" ]; then
   BASIC_AUTH_OPTS="--basic-auth-username ${basic_auth_username} --basic_auth_password ${basic_auth_password}"
 fi
+
+GITHUB_AUTH_OPTS=()
 if [ "z${github_auth_client_id}" != "z" ]; then
-  GITHUB_CLIENT="--github-auth-client-id ${github_auth_client_id} --github-auth-client-secret ${github_auth_client_secret}"
+  GITHUB_AUTH_OPTS+=("--github-auth-client-id")
+  GITHUB_AUTH_OPTS+=("${github_auth_client_id}")
+  GITHUB_AUTH_OPTS+=("--github-auth-client-secret")
+  GITHUB_AUTH_OPTS+=("${github_auth_client_secret}")
 
   if [ "z${github_auth_organizations}" != "z" ]; then
-    GITHUB_AUTH_ORGS=$(echo "${github_auth_organizations}" | sed -e 's/^/--github-auth-organization /' -e 's/,/ --github-auth-organization /g')
+    str="${github_auth_organizations}"
+    IFS_ORIGINAL="$$IFS"
+    IFS=,
+    arr=($$str)
+    IFS="$$IFS_ORIGINAL"
+    for o in "$${arr[@]}"; do
+      GITHUB_AUTH_OPTS+=("--github-auth-organization")
+      GITHUB_AUTH_OPTS+=("$$o")
+    done
   fi
   if [ "z${github_auth_teams}" != "z" ]; then
-    GITHUB_AUTH_TEAMS=$(echo "${github_auth_teams}" | sed -e 's/^/--github-auth-team /' -e 's/,/ --github-auth-team /g')
+    str="${github_auth_teams}"
+    IFS_ORIGINAL="$$IFS"
+    IFS=,
+    arr=($$str)
+    IFS="$$IFS_ORIGINAL"
+    for t in "$${arr[@]}"; do
+      GITHUB_AUTH_OPTS+=("--github-auth-team")
+      GITHUB_AUTH_OPTS+=("$$t")
+    done
   fi
   if [ "z${github_auth_users}" != "z" ]; then
-    GITHUB_AUTH_USERS=$(echo "${github_auth_users}" | sed -e 's/^/--github-auth-user /' -e 's/,/ --github-auth-user /g')
+    str="${github_auth_users}"
+    IFS_ORIGINAL="$$IFS"
+    IFS=,
+    arr=($$str)
+    IFS="$$IFS_ORIGINAL"
+    for u in "$${arr[@]}"; do
+      GITHUB_AUTH_OPTS+=("--github-auth-user")
+      GITHUB_AUTH_OPTS+=("$$u")
+    done
   fi
-  GITHUB_AUTH_OPTS="$GITHUB_CLIENT $GITHUB_AUTH_ORGS $GITHUB_AUTH_TEAMS $GITHUB_AUTH_USERS"
 fi
 
 cd $CONCOURSE_PATH
@@ -42,7 +70,7 @@ concourse web --session-signing-key session_signing_key \
   --external-url $(cat external_url) \
   --postgres-data-source $(cat postgres_data_source) \
   $BASIC_AUTH_OPTS \
-  $GITHUB_AUTH_OPTS \
+  "$${GITHUB_AUTH_OPTS[@]}" \
   2>&1 > $CONCOURSE_PATH/concourse_web.log &
 
 echo $! > $CONCOURSE_PATH/pid
