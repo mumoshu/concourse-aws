@@ -20,7 +20,7 @@ git clone https://github.com/mumoshu/concourse-aws
 cd concourse-aws
 
 # Obtain the latest concourse-aws binary from GitHub releases
-curl -L https://github.com/mumoshu/concourse-aws/releases/download/latest/concourse-aws -o concourse-aws && chmod +x concourse-aws
+curl -L https://github.com/mumoshu/concourse-aws/releases/download/v0.0.4/concourse-aws -o concourse-aws && chmod +x concourse-aws
 
 ./build-amis.sh
 
@@ -134,3 +134,9 @@ However I was too lazy to learn it for now mainly because:
   * I wonder if I could run docker containers instead of concourse ci's standalone binaries using this
 * Maybe more up-to-date than [starkandwayne/terraform-concourse](https://github.com/starkandwayne/terraform-concourse)
 * [motevets/concourse-in-a-box](https://github.com/motevets/concourse-in-a-box) to quickly get concourse up-and-running on a single Ubuntu 14.04 EC2 instance
+
+## Contributing
+
+### Making changes
+
+The concourse-aws binary needs to be built for every architecture and pushed to GitHub Releases manually whenever the concourse-aws binary has code changes. Every significant change to the functionality should result in a bump of the version number in the `version` file.
