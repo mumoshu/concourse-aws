@@ -4,8 +4,9 @@ http://www.slideshare.net/mumoshu/autoscaled-concourse-ci-on-aws-wo-bosh
 
 ## Recommended Usage: Using `concourse-aws` binary
 
-1. Install [packer](https://github.com/mitchellh/packer) and [terraform](https://github.com/hashicorp/terraform)
-
+1. Install [packer](https://github.com/mitchellh/packer) and [terraform(< 0.7.0)](https://github.com/hashicorp/terraform)
+  * for now, concourse-aws supports only terraform(< 0.7.0) due to this issue: https://github.com/hashicorp/terraform/issues/7971
+  
 2. Create 1 VPC and 2 subnets in it
 
 3. Clone this repository
