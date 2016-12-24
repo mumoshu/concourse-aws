@@ -22,6 +22,8 @@ service docker stop
 concourse worker \
   --work-dir $CONCOURSE_PATH \
   --peer-ip $(cat peer_ip) \
+  --bind-ip $(cat peer_ip) \
+  --baggageclaim-bind-ip $(cat peer_ip) \
   --tsa-host $(cat tsa_host) \
   --tsa-public-key tsa_public_key \
   --tsa-worker-private-key tsa_worker_private_key 2>&1 > $CONCOURSE_PATH/concourse_worker.log &

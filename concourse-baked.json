@@ -11,13 +11,13 @@
     "source_ami": "{{user `source_ami`}}",
     "instance_type": "t2.micro",
     "ssh_username": "ubuntu",
-    "ami_name": "packer-concourse-v2.2.1-{{timestamp}}"
+    "ami_name": "packer-concourse-v2.5.1-{{timestamp}}"
   }],
   "provisioners": [{
     "type": "shell",
     "inline": [
       "uname -a",
-      "curl -v -L https://github.com/concourse/concourse/releases/download/v2.2.1/concourse_linux_amd64 -o concourse",
+      "curl -v -L https://github.com/concourse/concourse/releases/download/v2.5.1/concourse_linux_amd64 -o concourse",
       "chmod +x concourse",
       "sudo mv concourse /usr/local/bin/concourse"
     ]
