@@ -106,6 +106,10 @@ variable "db_instance_class" {
   description = "t2.micro"
 }
 
+variable "db_engine_version" {
+  description = "engine version of rds engine ('postgres')"
+}
+
 variable "tsa_host_key" {
   description = ""
 }

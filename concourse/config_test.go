@@ -21,6 +21,7 @@ subnet_ids:
   - subnet-11111914
   - subnet-2222fc48
 accessible_cidrs: 123.123.234.234/32,234.234.234.234/32
+db_engine_version: "9.4.7"
 asg_min: 0
 asg_max: 2
 web_asg_desired: 1
@@ -44,6 +45,7 @@ ssl_certificate_arn: "arn://dummydummy"
 			WorkerInstanceType:       "t2.medium",
 			SubnetIds:                []string{"subnet-11111914", "subnet-2222fc48"},
 			AccessibleCIDRS:          "123.123.234.234/32,234.234.234.234/32",
+			DBEngineVersion:          "9.4.7",
 			AsgMin:                   "0",
 			AsgMax:                   "2",
 			WebAsgDesired:            "1",
