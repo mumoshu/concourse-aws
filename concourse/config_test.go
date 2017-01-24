@@ -15,6 +15,8 @@ var validConfigs = []struct {
 prefix: sample
 region: ap-northeast-1
 key_name: cw_kuoka
+web_instance_type: t2.small
+worker_instance_type: t2.medium
 subnet_ids:
   - subnet-11111914
   - subnet-2222fc48
@@ -37,6 +39,9 @@ ssl_certificate_arn: "arn://dummydummy"
 			Prefix:                   "sample",
 			Region:                   "ap-northeast-1",
 			KeyName:                  "cw_kuoka",
+			InstanceType:             "",
+			WebInstanceType:          "t2.small",
+			WorkerInstanceType:       "t2.medium",
 			SubnetIds:                []string{"subnet-11111914", "subnet-2222fc48"},
 			AccessibleCIDRS:          "123.123.234.234/32,234.234.234.234/32",
 			AsgMin:                   "0",

@@ -105,7 +105,9 @@ func InteractivelyCreateConfig() *concourse.Config {
 	accessibleCIDRS := AskForRequiredInput("AccessibleCIDRS(commma separated)", AskOptions{Default: fmt.Sprintf("%s/32", ObtainExternalIp())})
 
 	dbInstanceClass := AskForRequiredInput("DB Instance Class", AskOptions{Default: "db.t2.micro"})
-	instanceType := AskForRequiredInput("Concourse Instance Type", AskOptions{Default: "t2.micro"})
+
+	webInstanceType := AskForRequiredInput("Concourse Web Instance Type", AskOptions{Default: "t2.micro"})
+	workerInstanceType := AskForRequiredInput("Concourse Worker Instance Type", AskOptions{Default: "t2.micro"})
 
 	asgMin := AskForRequiredInput("Min numbers of servers in ASG(Web, Worker)", AskOptions{Default: "0"})
 	asgMax := AskForRequiredInput("Max numbers of servers in ASG(Web, Worker)", AskOptions{Default: "2"})
@@ -184,7 +186,8 @@ func InteractivelyCreateConfig() *concourse.Config {
 		SubnetIds:                subnetIds,
 		AvailabilityZones:        availabilityZones,
 		DBInstanceClass:          dbInstanceClass,
-		InstanceType:             instanceType,
+		WebInstanceType:          webInstanceType,
+		WorkerInstanceType:       workerInstanceType,
 		AMI:                      amiId,
 		AsgMin:                   asgMin,
 		AsgMax:                   asgMax,
@@ -259,6 +262,18 @@ func TerraformRun(subcommand string, c *concourse.Config) {
 		useCustomElbPort = 1
 	}
 
+	// for backward compatibility
+	// instance_type will be copied to web_instance_type and worker_instance_type only if they are not used.
+	if c.InstanceType != "" {
+		fmt.Println("WARNING: instance_type is deprecated. Use web_instance_type and worker_instance_type instead")
+		if c.WebInstanceType == "" {
+			c.WebInstanceType = c.InstanceType
+		}
+		if c.WorkerInstanceType == "" {
+			c.WorkerInstanceType = c.InstanceType
+		}
+	}
+
 	args := []string{
 		subcommand,
 		"-state", fmt.Sprintf("%s%s", cfgDir, "terraform.tfstate"),
@@ -268,7 +283,8 @@ func TerraformRun(subcommand string, c *concourse.Config) {
 		"-var", fmt.Sprintf("subnet_id=%s", strings.Join(c.SubnetIds, ",")),
 		"-var", fmt.Sprintf("vpc_id=%s", c.VpcId),
 		"-var", fmt.Sprintf("db_instance_class=%s", c.DBInstanceClass),
-		"-var", fmt.Sprintf("instance_type=%s", c.InstanceType),
+		"-var", fmt.Sprintf("web_instance_type=%s", c.WebInstanceType),
+		"-var", fmt.Sprintf("worker_instance_type=%s", c.WorkerInstanceType),
 		"-var", "db_username=concourse",
 		"-var", "db_password=concourse",
 		"-var", fmt.Sprintf("db_subnet_ids=%s", strings.Join(c.SubnetIds, ",")),

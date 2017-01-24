@@ -1,3 +1,4 @@
+.idea
 host_key*
 session_signing_key*
 worker_key*

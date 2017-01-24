@@ -8,15 +8,18 @@ import (
 )
 
 type Config struct {
-	Prefix                   string   `yaml:"prefix"`
-	Region                   string   `yaml:"region"`
-	KeyName                  string   `yaml:"key_name"`
-	SubnetIds                []string `yaml:"subnet_ids"`
-	VpcId                    string   `yaml:"vpc_id"`
-	AvailabilityZones        []string `yaml:"availability_zones"`
-	AccessibleCIDRS          string   `yaml:"accessible_cidrs"`
-	DBInstanceClass          string   `yaml:"db_instance_class"`
+	Prefix            string   `yaml:"prefix"`
+	Region            string   `yaml:"region"`
+	KeyName           string   `yaml:"key_name"`
+	SubnetIds         []string `yaml:"subnet_ids"`
+	VpcId             string   `yaml:"vpc_id"`
+	AvailabilityZones []string `yaml:"availability_zones"`
+	AccessibleCIDRS   string   `yaml:"accessible_cidrs"`
+	DBInstanceClass   string   `yaml:"db_instance_class"`
+	// Deprecated: Use WebInstanceType and WorkerInstanceType instead.
 	InstanceType             string   `yaml:"instance_type"`
+	WebInstanceType          string   `yaml:"web_instance_type"`
+	WorkerInstanceType       string   `yaml:"worker_instance_type"`
 	WorkerInstanceProfile    string   `yaml:"worker_instance_profile"`
 	AMI                      string   `yaml:"ami_id"`
 	AsgMin                   string   `yaml:"asg_min"`
