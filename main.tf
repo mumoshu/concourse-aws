@@ -400,7 +400,7 @@ resource "aws_db_instance" "default" {
   identifier = "${var.prefix}db"
   allocated_storage = "10"
   engine = "postgres"
-  engine_version = "9.4.5"
+  engine_version = "${var.db_engine_version}"
   instance_class = "${var.db_instance_class}"
   name = "concourse"
   username = "${var.db_username}"
