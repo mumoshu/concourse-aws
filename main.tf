@@ -106,7 +106,7 @@ resource "aws_launch_configuration" "web-lc" {
   # ref. https://github.com/hashicorp/terraform/issues/1109#issuecomment-97970885
   #image_id = "${lookup(var.aws_amis, var.aws_region)}"
   image_id = "${var.ami}"
-  instance_type = "${var.instance_type}"
+  instance_type = "${var.web_instance_type}"
   security_groups = ["${aws_security_group.default.id}","${aws_security_group.atc.id}","${aws_security_group.tsa.id}"]
   user_data = "${template_cloudinit_config.web.rendered}"
   key_name = "${var.key_name}"
@@ -119,7 +119,7 @@ resource "aws_launch_configuration" "web-lc" {
 resource "aws_launch_configuration" "worker-lc" {
   #image_id = "${lookup(var.aws_amis, var.aws_region)}"
   image_id = "${var.ami}"
-  instance_type = "${var.instance_type}"
+  instance_type = "${var.worker_instance_type}"
   security_groups = ["${aws_security_group.default.id}", "${aws_security_group.worker.id}"]
   user_data = "${template_cloudinit_config.worker.rendered}"
   key_name = "${var.key_name}"

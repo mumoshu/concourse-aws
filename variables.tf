@@ -1,6 +1,6 @@
 variable "prefix" {
   description = "Prefix for every resource created by this template"
-  default = "concourse-"  
+  default = "concourse-"
 }
 
 variable "aws_region" {
@@ -29,9 +29,14 @@ variable "key_name" {
   description = "Name of AWS key pair"
 }
 
-variable "instance_type" {
+variable "web_instance_type" {
   default = "t2.micro"
-  description = "AWS instance type"
+  description = "AWS instance type for web"
+}
+
+variable "worker_instance_type" {
+  default = "t2.micro"
+  description = "AWS instance type for worker"
 }
 
 variable "asg_min" {
