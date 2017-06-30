@@ -7,7 +7,7 @@ import (
 )
 
 func ObtainExternalIp() string {
-	resp, err := http.Get("http://myexternalip.com/raw")
+	resp, err := http.Get("https://myexternalip.com/raw")
 	if err != nil {
 		panic(err)
 	}
