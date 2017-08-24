@@ -15,13 +15,13 @@ http://www.slideshare.net/mumoshu/autoscaled-concourse-ci-on-aws-wo-bosh
 git clone https://github.com/mumoshu/concourse-aws
 ```
 
-4. Run `concourse-aws up`
+4. Download latest concourse-aws binary from [Github releases](https://github.com/mumoshu/concourse-aws/releases/) and place the binary in your concourse-aws directory.
+
+
+5. Run `concourse-aws up`
 
 ```
 cd concourse-aws
-
-# Obtain the latest concourse-aws binary from GitHub releases
-curl -L https://github.com/mumoshu/concourse-aws/releases/download/v0.0.4/concourse-aws -o concourse-aws && chmod +x concourse-aws
 
 ./build-amis.sh
 
