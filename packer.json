@@ -2,7 +2,7 @@
   "builders": [{
     "type": "amazon-ebs",
     "region": "ap-northeast-1",
-    "source_ami": "ami-5d38d93c",
+    "source_ami": "ami-0417e362",
     "instance_type": "t2.micro",
     "ssh_username": "ubuntu",
     "ami_name": "packer-ubuntu-xenial-{{timestamp}}"
